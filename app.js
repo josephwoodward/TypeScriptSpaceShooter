@@ -28,13 +28,12 @@ var Game = (function () {
         }
         return true;
         });*/
-        this.enemyDelay++;
-        var randomX = Math.floor(Math.random() * 800) + 1;
-        var enemy = new Enemy(randomX, -20);
+        var enemyFactory = new EnemyFactory();
 
+        this.enemyDelay++;
         if (this.globalData.entities.length <= this.enemyLimit) {
             if (this.enemyDelay >= 40) {
-                this.globalData.entities.push(enemy);
+                this.globalData.entities.push(enemyFactory.createEnemy());
                 this.enemyDelay = 0;
             }
         }
@@ -79,18 +78,20 @@ var Game = (function () {
 })();
 
 var Enemy = (function () {
-    function Enemy(posX, posY) {
+    function Enemy(posX, posY, enemySize) {
         this.enemyPosX = posX;
         this.enemyPosY = posY;
-        this.enemyWidth = 20;
-        this.enemyHeight = 20;
+
+        this.enemyHeight = enemySize;
+        this.enemyWidth = enemySize;
+
         this.speed = Math.floor(Math.random() * 4) + 1;
         this.enemyIsDead = false;
     }
     Enemy.prototype.draw = function (context) {
         var image = new Image();
         var descentY = this.enemyPosY++ * this.speed;
-        image.src = 'https://mdn.mozillademos.org/files/1429/Canvas_earth.png';
+        image.src = 'http://silveiraneto.net/downloads/asteroid.png';
         context.drawImage(image, this.enemyPosX, descentY, this.enemyWidth, this.enemyHeight);
     };
 
@@ -106,6 +107,17 @@ var Enemy = (function () {
         return this.enemyPosY;
     };
     return Enemy;
+})();
+
+var EnemyFactory = (function () {
+    function EnemyFactory() {
+    }
+    EnemyFactory.prototype.createEnemy = function () {
+        var randomX = Math.floor(Math.random() * 800) + 1;
+        var size = Math.floor(Math.random() * 40) + 20;
+        return new Enemy(randomX, -40, size);
+    };
+    return EnemyFactory;
 })();
 
 window.onload = function () {

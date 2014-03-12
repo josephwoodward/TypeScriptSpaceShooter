@@ -45,13 +45,12 @@ class Game {
         });*/
 
 
-        this.enemyDelay++;
-        var randomX = Math.floor(Math.random() * 800) + 1;
-        var enemy = new Enemy(randomX, -20);
+        var enemyFactory = new EnemyFactory();
 
+        this.enemyDelay++;
         if (this.globalData.entities.length <= this.enemyLimit) {
             if (this.enemyDelay >= 40) {
-                this.globalData.entities.push(enemy);
+                this.globalData.entities.push(enemyFactory.createEnemy());
                 this.enemyDelay = 0;
             }
         }
@@ -109,11 +108,13 @@ class Enemy implements IEnemey, IDrawable {
     public enemyPosY: number;
     public enemyIsDead: boolean;
 
-    constructor(posX: number, posY: number) {
+    constructor(posX: number, posY: number, enemySize: number) {
         this.enemyPosX = posX;
         this.enemyPosY = posY;
-        this.enemyWidth = 20;
-        this.enemyHeight = 20;
+
+        this.enemyHeight = enemySize;
+        this.enemyWidth = enemySize;
+        
         this.speed = Math.floor(Math.random() * 4) + 1;
         this.enemyIsDead = false;
     }
@@ -121,7 +122,7 @@ class Enemy implements IEnemey, IDrawable {
     draw(context: CanvasRenderingContext2D) {
         var image = new Image();
         var descentY = this.enemyPosY++ * this.speed;
-        image.src = 'https://mdn.mozillademos.org/files/1429/Canvas_earth.png';
+        image.src = 'http://silveiraneto.net/downloads/asteroid.png';
         context.drawImage(image, this.enemyPosX, descentY, this.enemyWidth, this.enemyHeight);
     }
 
@@ -137,6 +138,15 @@ class Enemy implements IEnemey, IDrawable {
         return this.enemyPosY;
     }
 
+}
+
+class EnemyFactory
+{
+    createEnemy() {
+        var randomX = Math.floor(Math.random() * 800) + 1;
+        var size = Math.floor(Math.random() * 40) + 20;
+        return new Enemy(randomX, -40, size);
+    }    
 }
 
 interface IEnemey {
