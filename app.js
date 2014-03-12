@@ -18,6 +18,7 @@ var Game = (function () {
         this.globalData = new GlobalData();
         this.globalData.entities = [];
         this.globalData.newEntities = [];
+        this.globalData.rocketEntites = [];
     }
     Game.prototype.step = function () {
         /*this.enemyCollection = this.enemyCollection.filter(function (enemy) {
@@ -42,6 +43,12 @@ var Game = (function () {
     Game.prototype.update = function () {
     };
 
+    Game.prototype.shoot = function () {
+        var rocket = new PlayerRocket(this.posX, this.posY);
+        this.globalData.rocketEntites.push(rocket);
+        //this.globalData.entities.push(rocket);
+    };
+
     Game.prototype.draw = function () {
         var appCanvas = document.getElementById('game_canvas');
         this.context = appCanvas.getContext("2d");
@@ -54,7 +61,9 @@ var Game = (function () {
         this.context.save();
 
         this.context.fillStyle = "rgb(200,0,0)";
-        this.context.fillRect(this.posX * 10, this.posY * 10, this.min, this.max);
+
+        //console.log("Draw player at: x = " + this.posX + " - y = " + this.posY);
+        this.context.fillRect(this.posX * 8, this.posY * 8, this.min, this.max);
 
         for (i = this.globalData.entities.length - 1; i >= 0; i--) {
             if (this.globalData.entities[i].getPosY() >= 500) {
@@ -71,6 +80,11 @@ var Game = (function () {
 
         for (var i = 0; i < this.globalData.entities.length; i++) {
             var drawable = this.globalData.entities[i];
+            drawable.draw(this.context);
+        }
+
+        for (var i = 0; i < this.globalData.rocketEntites.length; i++) {
+            var drawable = this.globalData.rocketEntites[i];
             drawable.draw(this.context);
         }
     };
@@ -109,6 +123,36 @@ var Enemy = (function () {
     return Enemy;
 })();
 
+var PlayerRocket = (function () {
+    function PlayerRocket(posX, posY) {
+        this.rocketHeight = 20;
+        this.rocketWidth = 20;
+        this.rocketSpeed = 1;
+        this.rocketIsDead = false;
+        this.rocketPosX = posX;
+        this.rocketPosY = posY;
+    }
+    PlayerRocket.prototype.draw = function (context) {
+        var image = new Image();
+        var ascentY = this.rocketPosY-- * this.rocketSpeed;
+
+        //var ascentY = ;
+        image.src = 'http://findicons.com/files/icons/1520/wallace_gromit/32/rocket.png';
+        context.drawImage(image, this.rocketPosX * 8, this.rocketPosY * 8, this.rocketWidth, this.rocketHeight);
+    };
+
+    PlayerRocket.prototype.isDead = function () {
+        return this.rocketIsDead;
+    };
+    PlayerRocket.prototype.getPosX = function () {
+        return this.rocketPosX;
+    };
+    PlayerRocket.prototype.getPosY = function () {
+        return this.rocketPosY;
+    };
+    return PlayerRocket;
+})();
+
 var EnemyFactory = (function () {
     function EnemyFactory() {
     }
@@ -116,7 +160,7 @@ var EnemyFactory = (function () {
         var randomX = Math.floor(Math.random() * 800) + 1;
         var size = Math.floor(Math.random() * 40) + 20;
 
-        var speed = Math.floor(Math.random() * 4) + 1;
+        var speed = Math.floor(Math.random() * 3) + 1;
 
         /*if (size >= 25) {
         speed = Math.floor(Math.random() * 1) + 1;
@@ -142,6 +186,9 @@ window.onload = function () {
             game.posX++;
         if (e.keyCode == 40)
             game.posY++;
+
+        if (e.keyCode == 32)
+            game.shoot();
     }
 
     (function gameloop() {

@@ -1,6 +1,7 @@
 class GlobalData {
     entities: IDrawable[];
     newEntities: IDrawable[];
+    rocketEntites: IDrawable[];
 }
 
 class Game {
@@ -31,6 +32,7 @@ class Game {
         this.globalData = new GlobalData();
         this.globalData.entities = [];
         this.globalData.newEntities = [];
+        this.globalData.rocketEntites = [];
     }
 
     public step() {
@@ -60,6 +62,13 @@ class Game {
 
     }
 
+    public shoot() {
+        
+        var rocket = new PlayerRocket(this.posX, this.posY)
+        this.globalData.rocketEntites.push(rocket);
+        //this.globalData.entities.push(rocket);
+    }
+
     public draw() {
 
         var appCanvas = <HTMLCanvasElement> document.getElementById('game_canvas');
@@ -73,7 +82,8 @@ class Game {
         this.context.save();
 
         this.context.fillStyle = "rgb(200,0,0)";
-        this.context.fillRect(this.posX * 10, this.posY * 10, this.min, this.max);
+        //console.log("Draw player at: x = " + this.posX + " - y = " + this.posY);
+        this.context.fillRect(this.posX * 8, this.posY * 8, this.min, this.max);
 
         // Check expired
         for (i = this.globalData.entities.length - 1; i >= 0; i--) {
@@ -93,6 +103,12 @@ class Game {
         // Draw entities
         for (var i = 0; i < this.globalData.entities.length; i++) {
             var drawable = <IDrawable> this.globalData.entities[i];
+            drawable.draw(this.context);
+        }
+
+        // Draw rockets
+        for (var i = 0; i < this.globalData.rocketEntites.length; i++) {
+            var drawable = <IDrawable> this.globalData.rocketEntites[i];
             drawable.draw(this.context);
         }
     }
@@ -140,13 +156,51 @@ class Enemy implements IEnemey, IDrawable {
 
 }
 
+class PlayerRocket implements IDrawable {
+
+    private rocketPosX: number;
+    private rocketPosY: number;
+    private rocketSpeed: number;
+    private rocketWidth: number;
+    private rocketHeight: number;
+    private rocketIsDead: boolean;
+
+    constructor(posX: number, posY: number) {
+        this.rocketHeight = 20;
+        this.rocketWidth = 20;
+        this.rocketSpeed = 1;
+        this.rocketIsDead = false;
+        this.rocketPosX = posX;
+        this.rocketPosY = posY;
+    }
+
+    draw(context: CanvasRenderingContext2D) {
+        var image = new Image();
+        var ascentY = this.rocketPosY-- * this.rocketSpeed;
+        //var ascentY = ;
+        image.src = 'http://findicons.com/files/icons/1520/wallace_gromit/32/rocket.png';
+        context.drawImage(image, this.rocketPosX * 8, this.rocketPosY * 8, this.rocketWidth, this.rocketHeight);
+    }
+
+    isDead() {
+        return this.rocketIsDead;
+    }
+    getPosX() {
+        return this.rocketPosX;
+    }
+    getPosY() {
+        return this.rocketPosY;
+    }
+
+}
+
 class EnemyFactory
 {
     createRandomEnemy() {
         var randomX = Math.floor(Math.random() * 800) + 1;
         var size = Math.floor(Math.random() * 40) + 20;
 
-        var speed = Math.floor(Math.random() * 4) + 1;
+        var speed = Math.floor(Math.random() * 3) + 1;
         /*if (size >= 25) {
             speed = Math.floor(Math.random() * 1) + 1;
         }*/
@@ -179,6 +233,8 @@ window.onload = () => {
         if (e.keyCode == 38) game.posY--;
         if (e.keyCode == 39) game.posX++;
         if (e.keyCode == 40) game.posY++;
+
+        if (e.keyCode == 32) game.shoot();
     }
 
     (function gameloop() {
