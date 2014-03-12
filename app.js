@@ -1,24 +1,11 @@
-class GlobalData {
-    entities: IDrawable[];
-    newEntities: IDrawable[];
-}
+var GlobalData = (function () {
+    function GlobalData() {
+    }
+    return GlobalData;
+})();
 
-class Game {
-
-    context: CanvasRenderingContext2D;
-    image: HTMLImageElement;
-    canvasId: string;
-    min: number;
-    max: number;
-    posX: number;
-    posY: number;
-    enemyDelay: number;
-    private enemyLimit: number;
-    enemy: IEnemey;
-    enemyCollection: IEnemey[];
-    globalData: GlobalData;
-
-    constructor() {
+var Game = (function () {
+    function Game() {
         this.posX = 0;
         this.posY = 0;
         this.min = 20;
@@ -32,19 +19,15 @@ class Game {
         this.globalData.entities = [];
         this.globalData.newEntities = [];
     }
-
-    public step() {
-
+    Game.prototype.step = function () {
         /*this.enemyCollection = this.enemyCollection.filter(function (enemy) {
-            var item = <Enemy> enemy;
-            if (item.enemyPosY >= 300) {
-
-                return false;
-            }
-            return true;
+        var item = <Enemy> enemy;
+        if (item.enemyPosY >= 300) {
+        
+        return false;
+        }
+        return true;
         });*/
-
-
         this.enemyDelay++;
         var randomX = Math.floor(Math.random() * 800) + 1;
         var enemy = new Enemy(randomX, -20);
@@ -55,15 +38,13 @@ class Game {
                 this.enemyDelay = 0;
             }
         }
-    }
+    };
 
-    public update() {
+    Game.prototype.update = function () {
+    };
 
-    }
-
-    public draw() {
-
-        var appCanvas = <HTMLCanvasElement> document.getElementById('game_canvas');
+    Game.prototype.draw = function () {
+        var appCanvas = document.getElementById('game_canvas');
         this.context = appCanvas.getContext("2d");
 
         this.context.globalCompositeOperation = 'destination-over';
@@ -76,7 +57,6 @@ class Game {
         this.context.fillStyle = "rgb(200,0,0)";
         this.context.fillRect(this.posX * 10, this.posY * 10, this.min, this.max);
 
-        // Check expired
         for (i = this.globalData.entities.length - 1; i >= 0; i--) {
             if (this.globalData.entities[i].getPosY() >= 500) {
                 this.globalData.entities.splice(i, 1);
@@ -84,32 +64,22 @@ class Game {
             }
         }
 
-        // Remove dead entities
         for (i = this.globalData.entities.length - 1; i >= 0; i--) {
             if (this.globalData.entities[i].isDead()) {
                 this.globalData.entities.splice(i, 1);
             }
         }
 
-        // Draw entities
         for (var i = 0; i < this.globalData.entities.length; i++) {
-            var drawable = <IDrawable> this.globalData.entities[i];
+            var drawable = this.globalData.entities[i];
             drawable.draw(this.context);
         }
-    }
+    };
+    return Game;
+})();
 
-}
-
-class Enemy implements IEnemey, IDrawable {
-
-    private enemyWidth: number;
-    private enemyHeight: number;
-    private speed: number;
-    private enemyPosX: number;
-    public enemyPosY: number;
-    public enemyIsDead: boolean;
-
-    constructor(posX: number, posY: number) {
+var Enemy = (function () {
+    function Enemy(posX, posY) {
         this.enemyPosX = posX;
         this.enemyPosY = posY;
         this.enemyWidth = 20;
@@ -117,41 +87,28 @@ class Enemy implements IEnemey, IDrawable {
         this.speed = Math.floor(Math.random() * 4) + 1;
         this.enemyIsDead = false;
     }
-
-    draw(context: CanvasRenderingContext2D) {
+    Enemy.prototype.draw = function (context) {
         var image = new Image();
         var descentY = this.enemyPosY++ * this.speed;
         image.src = 'https://mdn.mozillademos.org/files/1429/Canvas_earth.png';
         context.drawImage(image, this.enemyPosX, descentY, this.enemyWidth, this.enemyHeight);
-    }
+    };
 
-    isDead() {
+    Enemy.prototype.isDead = function () {
         return this.enemyIsDead;
-    }
+    };
 
-    getPosX() {
+    Enemy.prototype.getPosX = function () {
         return this.enemyPosX;
-    }
+    };
 
-    getPosY() {
+    Enemy.prototype.getPosY = function () {
         return this.enemyPosY;
-    }
+    };
+    return Enemy;
+})();
 
-}
-
-interface IEnemey {
-
-}
-
-interface IDrawable {
-    isDead(): boolean;
-    getPosX(): number;
-    getPosY(): number;
-    draw(context: CanvasRenderingContext2D);
-}
-
-window.onload = () => {
-
+window.onload = function () {
     var game = new Game();
 
     document.onkeydown = checkKey;
@@ -159,14 +116,17 @@ window.onload = () => {
     function checkKey(e) {
         e = e || window.event;
 
-        if (e.keyCode == 37) game.posX--;
-        if (e.keyCode == 38) game.posY--;
-        if (e.keyCode == 39) game.posX++;
-        if (e.keyCode == 40) game.posY++;
+        if (e.keyCode == 37)
+            game.posX--;
+        if (e.keyCode == 38)
+            game.posY--;
+        if (e.keyCode == 39)
+            game.posX++;
+        if (e.keyCode == 40)
+            game.posY++;
     }
 
     (function gameloop() {
-
         // stats.update();
         game.step();
         game.update();
@@ -174,5 +134,5 @@ window.onload = () => {
 
         window.requestAnimationFrame(gameloop);
     })();
-
 };
+//# sourceMappingURL=app.js.map

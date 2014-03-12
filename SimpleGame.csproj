@@ -18,7 +18,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Content Include="app.css" />
-    <Content Include="default.htm" />
+    <Content Include="index.htm" />
     <Content Include="web.config" />
   </ItemGroup>
   <ItemGroup>
