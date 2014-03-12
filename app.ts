@@ -50,7 +50,7 @@ class Game {
         this.enemyDelay++;
         if (this.globalData.entities.length <= this.enemyLimit) {
             if (this.enemyDelay >= 40) {
-                this.globalData.entities.push(enemyFactory.createEnemy());
+                this.globalData.entities.push(enemyFactory.createRandomEnemy());
                 this.enemyDelay = 0;
             }
         }
@@ -108,14 +108,14 @@ class Enemy implements IEnemey, IDrawable {
     public enemyPosY: number;
     public enemyIsDead: boolean;
 
-    constructor(posX: number, posY: number, enemySize: number) {
+    constructor(posX: number, posY: number, enemySize: number, speed: number) {
         this.enemyPosX = posX;
         this.enemyPosY = posY;
 
         this.enemyHeight = enemySize;
         this.enemyWidth = enemySize;
         
-        this.speed = Math.floor(Math.random() * 4) + 1;
+        this.speed = speed;
         this.enemyIsDead = false;
     }
 
@@ -142,10 +142,16 @@ class Enemy implements IEnemey, IDrawable {
 
 class EnemyFactory
 {
-    createEnemy() {
+    createRandomEnemy() {
         var randomX = Math.floor(Math.random() * 800) + 1;
         var size = Math.floor(Math.random() * 40) + 20;
-        return new Enemy(randomX, -40, size);
+
+        var speed = Math.floor(Math.random() * 4) + 1;
+        /*if (size >= 25) {
+            speed = Math.floor(Math.random() * 1) + 1;
+        }*/
+
+        return new Enemy(randomX, -40, size, speed);
     }    
 }
 

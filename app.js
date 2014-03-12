@@ -33,7 +33,7 @@ var Game = (function () {
         this.enemyDelay++;
         if (this.globalData.entities.length <= this.enemyLimit) {
             if (this.enemyDelay >= 40) {
-                this.globalData.entities.push(enemyFactory.createEnemy());
+                this.globalData.entities.push(enemyFactory.createRandomEnemy());
                 this.enemyDelay = 0;
             }
         }
@@ -78,14 +78,14 @@ var Game = (function () {
 })();
 
 var Enemy = (function () {
-    function Enemy(posX, posY, enemySize) {
+    function Enemy(posX, posY, enemySize, speed) {
         this.enemyPosX = posX;
         this.enemyPosY = posY;
 
         this.enemyHeight = enemySize;
         this.enemyWidth = enemySize;
 
-        this.speed = Math.floor(Math.random() * 4) + 1;
+        this.speed = speed;
         this.enemyIsDead = false;
     }
     Enemy.prototype.draw = function (context) {
@@ -112,10 +112,16 @@ var Enemy = (function () {
 var EnemyFactory = (function () {
     function EnemyFactory() {
     }
-    EnemyFactory.prototype.createEnemy = function () {
+    EnemyFactory.prototype.createRandomEnemy = function () {
         var randomX = Math.floor(Math.random() * 800) + 1;
         var size = Math.floor(Math.random() * 40) + 20;
-        return new Enemy(randomX, -40, size);
+
+        var speed = Math.floor(Math.random() * 4) + 1;
+
+        /*if (size >= 25) {
+        speed = Math.floor(Math.random() * 1) + 1;
+        }*/
+        return new Enemy(randomX, -40, size, speed);
     };
     return EnemyFactory;
 })();
