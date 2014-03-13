@@ -137,8 +137,11 @@ var PlayerRocket = (function () {
         var ascentY = this.rocketPosY-- * this.rocketSpeed;
 
         //var ascentY = ;
+        var posX = this.rocketPosX * 8;
+        var posY = this.rocketPosY * 8;
+
         image.src = 'http://findicons.com/files/icons/1520/wallace_gromit/32/rocket.png';
-        context.drawImage(image, this.rocketPosX * 8, this.rocketPosY * 8, this.rocketWidth, this.rocketHeight);
+        context.drawImage(image, posX, posY, this.rocketWidth, this.rocketHeight);
     };
 
     PlayerRocket.prototype.isDead = function () {

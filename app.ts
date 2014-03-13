@@ -63,8 +63,8 @@ class Game {
     }
 
     public shoot() {
-        
-        var rocket = new PlayerRocket(this.posX, this.posY)
+
+        var rocket = new PlayerRocket(this.posX, this.posY);
         this.globalData.rocketEntites.push(rocket);
         //this.globalData.entities.push(rocket);
     }
@@ -178,8 +178,12 @@ class PlayerRocket implements IDrawable {
         var image = new Image();
         var ascentY = this.rocketPosY-- * this.rocketSpeed;
         //var ascentY = ;
+
+        var posX = this.rocketPosX * 8;
+        var posY = this.rocketPosY * 8;
+
         image.src = 'http://findicons.com/files/icons/1520/wallace_gromit/32/rocket.png';
-        context.drawImage(image, this.rocketPosX * 8, this.rocketPosY * 8, this.rocketWidth, this.rocketHeight);
+        context.drawImage(image, posX, posY, this.rocketWidth, this.rocketHeight);
     }
 
     isDead() {
