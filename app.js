@@ -63,7 +63,7 @@ var Game = (function () {
         this.context.fillStyle = "rgb(200,0,0)";
 
         //console.log("Draw player at: x = " + this.posX + " - y = " + this.posY);
-        this.context.fillRect(this.posX * 8, this.posY * 8, this.min, this.max);
+        this.context.fillRect(this.posX, this.posY, this.min, this.max);
 
         for (i = this.globalData.entities.length - 1; i >= 0; i--) {
             if (this.globalData.entities[i].getPosY() >= 500) {
@@ -127,21 +127,16 @@ var PlayerRocket = (function () {
     function PlayerRocket(posX, posY) {
         this.rocketHeight = 20;
         this.rocketWidth = 20;
-        this.rocketSpeed = 1;
+        this.rocketSpeed = 3;
         this.rocketIsDead = false;
         this.rocketPosX = posX;
         this.rocketPosY = posY;
     }
     PlayerRocket.prototype.draw = function (context) {
         var image = new Image();
-        var ascentY = this.rocketPosY-- * this.rocketSpeed;
-
-        //var ascentY = ;
-        var posX = this.rocketPosX * 8;
-        var posY = this.rocketPosY * 8;
-
+        this.rocketPosY = (this.rocketPosY--) - this.rocketSpeed;
         image.src = 'http://findicons.com/files/icons/1520/wallace_gromit/32/rocket.png';
-        context.drawImage(image, posX, posY, this.rocketWidth, this.rocketHeight);
+        context.drawImage(image, this.rocketPosX, this.rocketPosY, this.rocketWidth, this.rocketHeight);
     };
 
     PlayerRocket.prototype.isDead = function () {
@@ -182,13 +177,13 @@ window.onload = function () {
         e = e || window.event;
 
         if (e.keyCode == 37)
-            game.posX--;
+            game.posX = (game.posX--) - 8;
         if (e.keyCode == 38)
-            game.posY--;
+            game.posY = (game.posY--) - 8;
         if (e.keyCode == 39)
-            game.posX++;
+            game.posX = (game.posX++) + 8;
         if (e.keyCode == 40)
-            game.posY++;
+            game.posY = (game.posY++) + 8;
 
         if (e.keyCode == 32)
             game.shoot();

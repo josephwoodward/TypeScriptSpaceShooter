@@ -83,7 +83,7 @@ class Game {
 
         this.context.fillStyle = "rgb(200,0,0)";
         //console.log("Draw player at: x = " + this.posX + " - y = " + this.posY);
-        this.context.fillRect(this.posX * 8, this.posY * 8, this.min, this.max);
+        this.context.fillRect(this.posX, this.posY, this.min, this.max);
 
         // Check expired
         for (i = this.globalData.entities.length - 1; i >= 0; i--) {
@@ -168,7 +168,7 @@ class PlayerRocket implements IDrawable {
     constructor(posX: number, posY: number) {
         this.rocketHeight = 20;
         this.rocketWidth = 20;
-        this.rocketSpeed = 1;
+        this.rocketSpeed = 3;
         this.rocketIsDead = false;
         this.rocketPosX = posX;
         this.rocketPosY = posY;
@@ -176,14 +176,9 @@ class PlayerRocket implements IDrawable {
 
     draw(context: CanvasRenderingContext2D) {
         var image = new Image();
-        var ascentY = this.rocketPosY-- * this.rocketSpeed;
-        //var ascentY = ;
-
-        var posX = this.rocketPosX * 8;
-        var posY = this.rocketPosY * 8;
-
+        this.rocketPosY = (this.rocketPosY--) - this.rocketSpeed;
         image.src = 'http://findicons.com/files/icons/1520/wallace_gromit/32/rocket.png';
-        context.drawImage(image, posX, posY, this.rocketWidth, this.rocketHeight);
+        context.drawImage(image, this.rocketPosX, this.rocketPosY, this.rocketWidth, this.rocketHeight);
     }
 
     isDead() {
@@ -233,10 +228,10 @@ window.onload = () => {
     function checkKey(e) {
         e = e || window.event;
 
-        if (e.keyCode == 37) game.posX--;
-        if (e.keyCode == 38) game.posY--;
-        if (e.keyCode == 39) game.posX++;
-        if (e.keyCode == 40) game.posY++;
+        if (e.keyCode == 37) game.posX = (game.posX--) - 8;
+        if (e.keyCode == 38) game.posY = (game.posY--) - 8;
+        if (e.keyCode == 39) game.posX = (game.posX++) + 8;
+        if (e.keyCode == 40) game.posY = (game.posY++) + 8;
 
         if (e.keyCode == 32) game.shoot();
     }
