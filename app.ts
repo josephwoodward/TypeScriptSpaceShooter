@@ -13,6 +13,10 @@ class Game {
     max: number;
     posX: number;
     posY: number;
+
+    canvasWidth: number;
+    canvasHeight: number;
+
     enemyDelay: number;
     private enemyLimit: number;
     enemy: IEnemey;
@@ -29,6 +33,9 @@ class Game {
         this.enemyCollection = [];
         this.enemyLimit = 30; //number of enemies allowed
         this.enemyDelay = 0; //iterations between generating new enemy
+
+        this.canvasWidth = 900;
+        this.canvasHeight = 500;
 
         this.globalData = new GlobalData();
         this.globalData.entities = [];
@@ -70,29 +77,11 @@ class Game {
         this.context.strokeStyle = 'rgba(0,153,255,0.4)';
         this.context.save();
 
-        //this.context.fillStyle = "rgb(200,0,0)";
-        //console.log("Draw player at: x = " + this.posX + " - y = " + this.posY);
-        //this.context.fillRect(this.posX, this.posY, this.min, this.max);
+        if (this.playerShip.movingLeft) this.playerShip.moveLeft();
+        if (this.playerShip.movingRight) this.playerShip.moveRight();
+        if (this.playerShip.movingUp) this.playerShip.moveUp();
+        if (this.playerShip.movingDown) this.playerShip.moveDown();
 
-        //SET ON KEY RELEASE
-
-        if (this.playerShip.moveLeft) {
-            this.playerShip.playerPosX-= 3;
-            //this.playerShip.setMoveLeft(false);
-        }
-        if (this.playerShip.moveRight) {
-            this.playerShip.playerPosX += 3;
-            //this.playerShip.setMoveRight(false);
-        }
-
-        if (this.playerShip.moveUp) {
-            this.playerShip.playerPosY -= 3;
-            //this.playerShip.setMoveUp(false);
-        }
-        if (this.playerShip.moveDown) {
-            this.playerShip.playerPosY += 3;
-            //this.playerShip.setMoveDown(false);
-        }
         this.playerShip.draw(this.context);
 
         // Check expired
@@ -133,10 +122,10 @@ class PlayerShip implements IDrawable {
     public playerSpeed: number;
     public playerIsDead: boolean;
 
-    public moveLeft: boolean;
-    public moveRight: boolean;
-    public moveUp: boolean;
-    public moveDown: boolean;
+    public movingLeft: boolean;
+    public movingRight: boolean;
+    public movingUp: boolean;
+    public movingDown: boolean;
 
     public playerWidth: number;
     public playerHeight: number;
@@ -148,14 +137,12 @@ class PlayerShip implements IDrawable {
         this.playerWidth = 40;
         this.playerHeight = 40;
 
-        this.playerSpeed = 2;
+        this.playerSpeed = 5;
         this.playerIsDead = false;
     }
 
     draw(context: CanvasRenderingContext2D) {
         var image = new Image();
-        this.playerPosX = this.playerPosX;
-        this.playerPosY = this.playerPosY;
         image.src = 'http://www.pixeljoint.com/files/icons/spaceship1_final.png';
         context.drawImage(image, this.playerPosX, this.playerPosY, this.playerWidth, this.playerHeight);
     }
@@ -172,20 +159,52 @@ class PlayerShip implements IDrawable {
         return this.playerPosY;
     }
 
-    setMoveLeft(moveLeft :boolean) {
-        this.moveLeft = moveLeft;
+    moveLeft() {
+        if (this.playerPosX < -(this.playerWidth)) {
+            this.playerPosX = 900;
+        } else {
+            this.playerPosX -= this.playerSpeed;
+        }
+    }
+
+    moveRight() {
+        if (this.playerPosX >= 890) {
+            this.playerPosX = -(this.playerWidth);
+        } else {
+            this.playerPosX += this.playerSpeed;
+        }
+    }
+
+    moveUp() {
+        if (this.playerPosY <= -(this.playerHeight)) {
+            this.playerPosY = 500;
+        } else {
+            this.playerPosY -= this.playerSpeed;
+        }
+    }
+
+    moveDown() {
+        if (this.playerPosY >= (500 + (this.playerHeight / 2))) {
+            this.playerPosY = -(this.playerHeight - 5);
+        } else {
+            this.playerPosY += this.playerSpeed;
+        }
+    }
+
+    setMoveLeft(moveLeft: boolean) {
+        this.movingLeft = moveLeft;
     }
 
     setMoveRight(moveRight: boolean) {
-        this.moveRight = moveRight;
+        this.movingRight = moveRight;
     }
 
     setMoveUp(moveUp: boolean) {
-        this.moveUp = moveUp;
+        this.movingUp = moveUp;
     }
 
     setMoveDown(moveDown: boolean) {
-        this.moveDown = moveDown;
+        this.movingDown = moveDown;
     }
 
 }
@@ -274,7 +293,7 @@ class EnemyFactory
         var randomX = Math.floor(Math.random() * 800) + 1;
         var size = Math.floor(Math.random() * 40) + 20;
 
-        var speed = Math.floor(Math.random() * 5) + 2;
+        var speed = Math.floor(Math.random() * 3) + 1;
         /*if (size >= 25) {
             speed = Math.floor(Math.random() * 1) + 1;
         }*/

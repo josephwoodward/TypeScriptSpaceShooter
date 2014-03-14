@@ -15,6 +15,9 @@ var Game = (function () {
         this.enemyLimit = 30; //number of enemies allowed
         this.enemyDelay = 0; //iterations between generating new enemy
 
+        this.canvasWidth = 900;
+        this.canvasHeight = 500;
+
         this.globalData = new GlobalData();
         this.globalData.entities = [];
         this.globalData.newEntities = [];
@@ -52,27 +55,15 @@ var Game = (function () {
         this.context.strokeStyle = 'rgba(0,153,255,0.4)';
         this.context.save();
 
-        //this.context.fillStyle = "rgb(200,0,0)";
-        //console.log("Draw player at: x = " + this.posX + " - y = " + this.posY);
-        //this.context.fillRect(this.posX, this.posY, this.min, this.max);
-        //SET ON KEY RELEASE
-        if (this.playerShip.moveLeft) {
-            this.playerShip.playerPosX -= 3;
-            //this.playerShip.setMoveLeft(false);
-        }
-        if (this.playerShip.moveRight) {
-            this.playerShip.playerPosX += 3;
-            //this.playerShip.setMoveRight(false);
-        }
+        if (this.playerShip.movingLeft)
+            this.playerShip.moveLeft();
+        if (this.playerShip.movingRight)
+            this.playerShip.moveRight();
+        if (this.playerShip.movingUp)
+            this.playerShip.moveUp();
+        if (this.playerShip.movingDown)
+            this.playerShip.moveDown();
 
-        if (this.playerShip.moveUp) {
-            this.playerShip.playerPosY -= 3;
-            //this.playerShip.setMoveUp(false);
-        }
-        if (this.playerShip.moveDown) {
-            this.playerShip.playerPosY += 3;
-            //this.playerShip.setMoveDown(false);
-        }
         this.playerShip.draw(this.context);
 
         for (i = this.globalData.entities.length - 1; i >= 0; i--) {
@@ -109,13 +100,11 @@ var PlayerShip = (function () {
         this.playerWidth = 40;
         this.playerHeight = 40;
 
-        this.playerSpeed = 2;
+        this.playerSpeed = 5;
         this.playerIsDead = false;
     }
     PlayerShip.prototype.draw = function (context) {
         var image = new Image();
-        this.playerPosX = this.playerPosX;
-        this.playerPosY = this.playerPosY;
         image.src = 'http://www.pixeljoint.com/files/icons/spaceship1_final.png';
         context.drawImage(image, this.playerPosX, this.playerPosY, this.playerWidth, this.playerHeight);
     };
@@ -132,20 +121,52 @@ var PlayerShip = (function () {
         return this.playerPosY;
     };
 
+    PlayerShip.prototype.moveLeft = function () {
+        if (this.playerPosX < -(this.playerWidth)) {
+            this.playerPosX = 900;
+        } else {
+            this.playerPosX -= this.playerSpeed;
+        }
+    };
+
+    PlayerShip.prototype.moveRight = function () {
+        if (this.playerPosX >= 890) {
+            this.playerPosX = -(this.playerWidth);
+        } else {
+            this.playerPosX += this.playerSpeed;
+        }
+    };
+
+    PlayerShip.prototype.moveUp = function () {
+        if (this.playerPosY <= -(this.playerHeight)) {
+            this.playerPosY = 500;
+        } else {
+            this.playerPosY -= this.playerSpeed;
+        }
+    };
+
+    PlayerShip.prototype.moveDown = function () {
+        if (this.playerPosY >= (500 + (this.playerHeight / 2))) {
+            this.playerPosY = -(this.playerHeight - 5);
+        } else {
+            this.playerPosY += this.playerSpeed;
+        }
+    };
+
     PlayerShip.prototype.setMoveLeft = function (moveLeft) {
-        this.moveLeft = moveLeft;
+        this.movingLeft = moveLeft;
     };
 
     PlayerShip.prototype.setMoveRight = function (moveRight) {
-        this.moveRight = moveRight;
+        this.movingRight = moveRight;
     };
 
     PlayerShip.prototype.setMoveUp = function (moveUp) {
-        this.moveUp = moveUp;
+        this.movingUp = moveUp;
     };
 
     PlayerShip.prototype.setMoveDown = function (moveDown) {
-        this.moveDown = moveDown;
+        this.movingDown = moveDown;
     };
     return PlayerShip;
 })();
@@ -217,7 +238,7 @@ var EnemyFactory = (function () {
         var randomX = Math.floor(Math.random() * 800) + 1;
         var size = Math.floor(Math.random() * 40) + 20;
 
-        var speed = Math.floor(Math.random() * 5) + 2;
+        var speed = Math.floor(Math.random() * 3) + 1;
 
         /*if (size >= 25) {
         speed = Math.floor(Math.random() * 1) + 1;
