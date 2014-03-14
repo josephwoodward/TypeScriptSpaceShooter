@@ -68,20 +68,20 @@ var Game = (function () {
         //this.context.fillRect(this.posX, this.posY, this.min, this.max);
         if (this.playerShip.moveLeft) {
             this.playerShip.playerPosX -= 5;
-            this.playerShip.setMoveLeft(false);
+            //this.playerShip.setMoveLeft(false);
         }
         if (this.playerShip.moveRight) {
             this.playerShip.playerPosX += 5;
-            this.playerShip.setMoveRight(false);
+            //this.playerShip.setMoveRight(false);
         }
 
         if (this.playerShip.moveUp) {
             this.playerShip.playerPosY -= 5;
-            this.playerShip.setMoveUp(false);
+            //this.playerShip.setMoveUp(false);
         }
         if (this.playerShip.moveDown) {
             this.playerShip.playerPosY += 5;
-            this.playerShip.setMoveDown(false);
+            //this.playerShip.setMoveDown(false);
         }
         this.playerShip.draw(this.context);
 
