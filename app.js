@@ -12,8 +12,8 @@ var Game = (function () {
         this.max = 20;
 
         this.enemyCollection = [];
-        this.enemyLimit = 20;
-        this.enemyDelay = 0;
+        this.enemyLimit = 30; //number of enemies allowed
+        this.enemyDelay = 0; //iterations between generating new enemy
 
         this.globalData = new GlobalData();
         this.globalData.entities = [];
@@ -21,19 +21,9 @@ var Game = (function () {
         this.globalData.rocketEntites = [];
 
         this.playerShip = new PlayerShip(0, 0);
-        //this.globalData.rocketEntites.push(this.playerShip);
     }
     Game.prototype.step = function () {
-        /*this.enemyCollection = this.enemyCollection.filter(function (enemy) {
-        var item = <Enemy> enemy;
-        if (item.enemyPosY >= 300) {
-        
-        return false;
-        }
-        return true;
-        });*/
         var enemyFactory = new EnemyFactory();
-
         this.enemyDelay++;
         if (this.globalData.entities.length <= this.enemyLimit) {
             if (this.enemyDelay >= 40) {
@@ -49,7 +39,6 @@ var Game = (function () {
     Game.prototype.shoot = function () {
         var rocket = new PlayerRocket(this.playerShip.getPosX() + 10, this.playerShip.getPosY());
         this.globalData.rocketEntites.push(rocket);
-        //this.globalData.entities.push(rocket);
     };
 
     Game.prototype.draw = function () {
@@ -66,21 +55,22 @@ var Game = (function () {
         //this.context.fillStyle = "rgb(200,0,0)";
         //console.log("Draw player at: x = " + this.posX + " - y = " + this.posY);
         //this.context.fillRect(this.posX, this.posY, this.min, this.max);
+        //SET ON KEY RELEASE
         if (this.playerShip.moveLeft) {
-            this.playerShip.playerPosX -= 5;
+            this.playerShip.playerPosX -= 3;
             //this.playerShip.setMoveLeft(false);
         }
         if (this.playerShip.moveRight) {
-            this.playerShip.playerPosX += 5;
+            this.playerShip.playerPosX += 3;
             //this.playerShip.setMoveRight(false);
         }
 
         if (this.playerShip.moveUp) {
-            this.playerShip.playerPosY -= 5;
+            this.playerShip.playerPosY -= 3;
             //this.playerShip.setMoveUp(false);
         }
         if (this.playerShip.moveDown) {
-            this.playerShip.playerPosY += 5;
+            this.playerShip.playerPosY += 3;
             //this.playerShip.setMoveDown(false);
         }
         this.playerShip.draw(this.context);
@@ -144,22 +134,18 @@ var PlayerShip = (function () {
 
     PlayerShip.prototype.setMoveLeft = function (moveLeft) {
         this.moveLeft = moveLeft;
-        this.moveRight = false;
     };
 
     PlayerShip.prototype.setMoveRight = function (moveRight) {
         this.moveRight = moveRight;
-        this.moveLeft = false;
     };
 
     PlayerShip.prototype.setMoveUp = function (moveUp) {
         this.moveUp = moveUp;
-        this.moveDown = false;
     };
 
     PlayerShip.prototype.setMoveDown = function (moveDown) {
         this.moveDown = moveDown;
-        this.moveUp = false;
     };
     return PlayerShip;
 })();
@@ -231,7 +217,7 @@ var EnemyFactory = (function () {
         var randomX = Math.floor(Math.random() * 800) + 1;
         var size = Math.floor(Math.random() * 40) + 20;
 
-        var speed = Math.floor(Math.random() * 3) + 1;
+        var speed = Math.floor(Math.random() * 5) + 2;
 
         /*if (size >= 25) {
         speed = Math.floor(Math.random() * 1) + 1;
@@ -245,6 +231,7 @@ window.onload = function () {
     var game = new Game();
 
     document.onkeydown = checkKey;
+    document.onkeyup = checkUpKey;
 
     function checkKey(e) {
         e = e || window.event;
@@ -257,6 +244,22 @@ window.onload = function () {
             game.playerShip.setMoveRight(true);
         if (e.keyCode == 40)
             game.playerShip.setMoveDown(true);
+
+        if (e.keyCode == 32)
+            game.shoot();
+    }
+
+    function checkUpKey(e) {
+        e = e || window.event;
+
+        if (e.keyCode == 37)
+            game.playerShip.setMoveLeft(false);
+        if (e.keyCode == 38)
+            game.playerShip.setMoveUp(false);
+        if (e.keyCode == 39)
+            game.playerShip.setMoveRight(false);
+        if (e.keyCode == 40)
+            game.playerShip.setMoveDown(false);
 
         if (e.keyCode == 32)
             game.shoot();

@@ -27,8 +27,8 @@ class Game {
         this.max = 20;
 
         this.enemyCollection = [];
-        this.enemyLimit = 20;
-        this.enemyDelay = 0;
+        this.enemyLimit = 30; //number of enemies allowed
+        this.enemyDelay = 0; //iterations between generating new enemy
 
         this.globalData = new GlobalData();
         this.globalData.entities = [];
@@ -36,23 +36,10 @@ class Game {
         this.globalData.rocketEntites = [];
 
         this.playerShip = new PlayerShip(0, 0);
-        //this.globalData.rocketEntites.push(this.playerShip);
     }
 
     public step() {
-
-        /*this.enemyCollection = this.enemyCollection.filter(function (enemy) {
-            var item = <Enemy> enemy;
-            if (item.enemyPosY >= 300) {
-
-                return false;
-            }
-            return true;
-        });*/
-
-
         var enemyFactory = new EnemyFactory();
-
         this.enemyDelay++;
         if (this.globalData.entities.length <= this.enemyLimit) {
             if (this.enemyDelay >= 40) {
@@ -67,10 +54,8 @@ class Game {
     }
 
     public shoot() {
-
         var rocket = new PlayerRocket(this.playerShip.getPosX() + 10, this.playerShip.getPosY());
         this.globalData.rocketEntites.push(rocket);
-        //this.globalData.entities.push(rocket);
     }
 
     public draw() {
@@ -92,20 +77,20 @@ class Game {
         //SET ON KEY RELEASE
 
         if (this.playerShip.moveLeft) {
-            this.playerShip.playerPosX-= 5;
+            this.playerShip.playerPosX-= 3;
             //this.playerShip.setMoveLeft(false);
         }
         if (this.playerShip.moveRight) {
-            this.playerShip.playerPosX+= 5;
+            this.playerShip.playerPosX += 3;
             //this.playerShip.setMoveRight(false);
         }
 
         if (this.playerShip.moveUp) {
-            this.playerShip.playerPosY -= 5;
+            this.playerShip.playerPosY -= 3;
             //this.playerShip.setMoveUp(false);
         }
         if (this.playerShip.moveDown) {
-            this.playerShip.playerPosY += 5;
+            this.playerShip.playerPosY += 3;
             //this.playerShip.setMoveDown(false);
         }
         this.playerShip.draw(this.context);
@@ -189,22 +174,18 @@ class PlayerShip implements IDrawable {
 
     setMoveLeft(moveLeft :boolean) {
         this.moveLeft = moveLeft;
-        this.moveRight = false;
     }
 
     setMoveRight(moveRight: boolean) {
         this.moveRight = moveRight;
-        this.moveLeft = false;
     }
 
     setMoveUp(moveUp: boolean) {
         this.moveUp = moveUp;
-        this.moveDown = false;
     }
 
     setMoveDown(moveDown: boolean) {
         this.moveDown = moveDown;
-        this.moveUp = false;
     }
 
 }
@@ -293,7 +274,7 @@ class EnemyFactory
         var randomX = Math.floor(Math.random() * 800) + 1;
         var size = Math.floor(Math.random() * 40) + 20;
 
-        var speed = Math.floor(Math.random() * 3) + 1;
+        var speed = Math.floor(Math.random() * 5) + 2;
         /*if (size >= 25) {
             speed = Math.floor(Math.random() * 1) + 1;
         }*/
@@ -318,6 +299,7 @@ window.onload = () => {
     var game = new Game();
 
     document.onkeydown = checkKey;
+    document.onkeyup = checkUpKey;
 
     function checkKey(e) {
         e = e || window.event;
@@ -329,6 +311,19 @@ window.onload = () => {
 
         if (e.keyCode == 32) game.shoot();
     }
+
+
+    function checkUpKey(e) {
+        e = e || window.event;
+        
+        if (e.keyCode == 37) game.playerShip.setMoveLeft(false);
+        if (e.keyCode == 38) game.playerShip.setMoveUp(false);
+        if (e.keyCode == 39) game.playerShip.setMoveRight(false);
+        if (e.keyCode == 40) game.playerShip.setMoveDown(false);
+
+        if (e.keyCode == 32) game.shoot();
+    }
+
 
     (function gameloop() {
 
