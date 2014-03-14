@@ -18,6 +18,7 @@ class Game {
     enemy: IEnemey;
     enemyCollection: IEnemey[];
     globalData: GlobalData;
+    playerShip: PlayerShip;
 
     constructor() {
         this.posX = 0;
@@ -33,6 +34,9 @@ class Game {
         this.globalData.entities = [];
         this.globalData.newEntities = [];
         this.globalData.rocketEntites = [];
+
+        this.playerShip = new PlayerShip(0, 0);
+        //this.globalData.rocketEntites.push(this.playerShip);
     }
 
     public step() {
@@ -64,7 +68,7 @@ class Game {
 
     public shoot() {
 
-        var rocket = new PlayerRocket(this.posX, this.posY);
+        var rocket = new PlayerRocket(this.playerShip.getPosX() + 10, this.playerShip.getPosY());
         this.globalData.rocketEntites.push(rocket);
         //this.globalData.entities.push(rocket);
     }
@@ -81,9 +85,28 @@ class Game {
         this.context.strokeStyle = 'rgba(0,153,255,0.4)';
         this.context.save();
 
-        this.context.fillStyle = "rgb(200,0,0)";
+        //this.context.fillStyle = "rgb(200,0,0)";
         //console.log("Draw player at: x = " + this.posX + " - y = " + this.posY);
-        this.context.fillRect(this.posX, this.posY, this.min, this.max);
+        //this.context.fillRect(this.posX, this.posY, this.min, this.max);
+
+        if (this.playerShip.moveLeft) {
+            this.playerShip.playerPosX-= 5;
+            this.playerShip.setMoveLeft(false);
+        }
+        if (this.playerShip.moveRight) {
+            this.playerShip.playerPosX+= 5;
+            this.playerShip.setMoveRight(false);
+        }
+
+        if (this.playerShip.moveUp) {
+            this.playerShip.playerPosY -= 5;
+            this.playerShip.setMoveUp(false);
+        }
+        if (this.playerShip.moveDown) {
+            this.playerShip.playerPosY += 5;
+            this.playerShip.setMoveDown(false);
+        }
+        this.playerShip.draw(this.context);
 
         // Check expired
         for (i = this.globalData.entities.length - 1; i >= 0; i--) {
@@ -111,6 +134,75 @@ class Game {
             var drawable = <IDrawable> this.globalData.rocketEntites[i];
             drawable.draw(this.context);
         }
+    }
+
+}
+
+class PlayerShip implements IDrawable {
+    
+    public playerPosX: number;
+    public playerPosY: number;
+    public playerCenter: number;
+    public playerSpeed: number;
+    public playerIsDead: boolean;
+
+    public moveLeft: boolean;
+    public moveRight: boolean;
+    public moveUp: boolean;
+    public moveDown: boolean;
+
+    public playerWidth: number;
+    public playerHeight: number;
+
+    constructor(posX: number, posY: number) {
+        this.playerPosX = posX;
+        this.playerPosY = posY;
+
+        this.playerWidth = 40;
+        this.playerHeight = 40;
+
+        this.playerSpeed = 2;
+        this.playerIsDead = false;
+    }
+
+    draw(context: CanvasRenderingContext2D) {
+        var image = new Image();
+        this.playerPosX = this.playerPosX;
+        this.playerPosY = this.playerPosY;
+        image.src = 'http://www.pixeljoint.com/files/icons/spaceship1_final.png';
+        context.drawImage(image, this.playerPosX, this.playerPosY, this.playerWidth, this.playerHeight);
+    }
+
+    isDead() {
+        return this.playerIsDead;
+    }
+
+    getPosX() {
+        return this.playerPosX;
+    }
+
+    getPosY() {
+        return this.playerPosY;
+    }
+
+    setMoveLeft(moveLeft :boolean) {
+        this.moveLeft = moveLeft;
+        this.moveRight = false;
+    }
+
+    setMoveRight(moveRight: boolean) {
+        this.moveRight = moveRight;
+        this.moveLeft = false;
+    }
+
+    setMoveUp(moveUp: boolean) {
+        this.moveUp = moveUp;
+        this.moveDown = false;
+    }
+
+    setMoveDown(moveDown: boolean) {
+        this.moveDown = moveDown;
+        this.moveUp = false;
     }
 
 }
@@ -168,7 +260,7 @@ class PlayerRocket implements IDrawable {
     constructor(posX: number, posY: number) {
         this.rocketHeight = 20;
         this.rocketWidth = 20;
-        this.rocketSpeed = 3;
+        this.rocketSpeed = 4;
         this.rocketIsDead = false;
         this.rocketPosX = posX;
         this.rocketPosY = posY;
@@ -228,10 +320,10 @@ window.onload = () => {
     function checkKey(e) {
         e = e || window.event;
 
-        if (e.keyCode == 37) game.posX = (game.posX--) - 8;
-        if (e.keyCode == 38) game.posY = (game.posY--) - 8;
-        if (e.keyCode == 39) game.posX = (game.posX++) + 8;
-        if (e.keyCode == 40) game.posY = (game.posY++) + 8;
+        if (e.keyCode == 37) game.playerShip.setMoveLeft(true);
+        if (e.keyCode == 38) game.playerShip.setMoveUp(true);
+        if (e.keyCode == 39) game.playerShip.setMoveRight(true);
+        if (e.keyCode == 40) game.playerShip.setMoveDown(true);
 
         if (e.keyCode == 32) game.shoot();
     }
