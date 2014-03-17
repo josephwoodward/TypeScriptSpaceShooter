@@ -23,6 +23,7 @@ class Game {
     enemyCollection: IEnemey[];
     globalData: GlobalData;
     playerShip: PlayerShip;
+    collision: CollisionDetection;
 
     constructor() {
         this.posX = 0;
@@ -43,6 +44,7 @@ class Game {
         this.globalData.rocketEntites = [];
 
         this.playerShip = new PlayerShip(0, 0);
+        this.collision = new CollisionDetection();
     }
 
     public step() {
@@ -112,6 +114,11 @@ class Game {
         }
     }
 
+}
+
+class CollisionDetection
+{
+    
 }
 
 class PlayerShip implements IDrawable {

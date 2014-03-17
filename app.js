@@ -24,6 +24,7 @@ var Game = (function () {
         this.globalData.rocketEntites = [];
 
         this.playerShip = new PlayerShip(0, 0);
+        this.collision = new CollisionDetection();
     }
     Game.prototype.step = function () {
         var enemyFactory = new EnemyFactory();
@@ -90,6 +91,12 @@ var Game = (function () {
         }
     };
     return Game;
+})();
+
+var CollisionDetection = (function () {
+    function CollisionDetection() {
+    }
+    return CollisionDetection;
 })();
 
 var PlayerShip = (function () {
