@@ -23,7 +23,9 @@ var Game = (function () {
         this.globalData.newEntities = [];
         this.globalData.rocketEntites = [];
 
-        this.playerShip = new PlayerShip(0, 0);
+        // Set player's starting position
+        this.playerShip = new PlayerShip((this.canvasWidth / 2), this.canvasHeight - 100);
+
         this.collision = new CollisionDetection();
     }
     Game.prototype.step = function () {
@@ -42,7 +44,7 @@ var Game = (function () {
 
     Game.prototype.shoot = function () {
         var rocket = new PlayerRocket(this.playerShip.getPosX() + 10, this.playerShip.getPosY());
-        this.globalData.rocketEntites.push(rocket);
+        this.globalData.entities.push(rocket);
     };
 
     Game.prototype.draw = function () {
@@ -67,6 +69,8 @@ var Game = (function () {
 
         this.playerShip.draw(this.context);
 
+        this.collision.detectCollisions(this.globalData.entities);
+
         for (i = this.globalData.entities.length - 1; i >= 0; i--) {
             if (this.globalData.entities[i].getPosY() >= 500) {
                 this.globalData.entities.splice(i, 1);
@@ -85,8 +89,8 @@ var Game = (function () {
             drawable.draw(this.context);
         }
 
-        for (var i = 0; i < this.globalData.rocketEntites.length; i++) {
-            var drawable = this.globalData.rocketEntites[i];
+        for (var i = 0; i < this.globalData.entities.length; i++) {
+            var drawable = this.globalData.entities[i];
             drawable.draw(this.context);
         }
     };
@@ -96,6 +100,43 @@ var Game = (function () {
 var CollisionDetection = (function () {
     function CollisionDetection() {
     }
+    //collidables: ICollidable[];
+    CollisionDetection.prototype.detectCollisions = function (collidables) {
+        for (var i = 0; i < collidables.length; i++) {
+            var entityA = collidables[i];
+
+            for (var j = i + 1; j < collidables.length; j++) {
+                var entityB = collidables[j];
+
+                /*if (!entityB.canCollide() || entityB.isDead()) {
+                continue;
+                }*/
+                if (this.isColliding(entityA, entityB)) {
+                    console.log(entityA);
+                    entityA.hasCollided();
+                    entityB.hasCollided();
+                    //CallCollisionFunction(entityA, entityB);
+                }
+            }
+        }
+    };
+
+    CollisionDetection.prototype.isColliding = function (entityA, entityB) {
+        var widthA = entityA.getWidth();
+        var heightA = entityA.getHeight();
+        var widthB = entityB.getWidth();
+        var heightB = entityB.getHeight();
+
+        var leftA = entityA.getPosX() - (widthA / 2);
+        var topA = entityA.getPosY() - (heightA / 2);
+        var leftB = entityB.getPosX() - (widthB / 2);
+        var topB = entityB.getPosY() - (heightB / 2);
+
+        if (leftA < leftB + widthB && leftA + widthA > leftB && topA < topB + heightB && topA + heightA > topB) {
+            return true;
+        }
+        return false;
+    };
     return CollisionDetection;
 })();
 
@@ -207,6 +248,18 @@ var Enemy = (function () {
     Enemy.prototype.getPosY = function () {
         return this.enemyPosY;
     };
+
+    Enemy.prototype.hasCollided = function () {
+        return true;
+    };
+
+    Enemy.prototype.getWidth = function () {
+        return this.enemyWidth;
+    };
+
+    Enemy.prototype.getHeight = function () {
+        return this.enemyHeight;
+    };
     return Enemy;
 })();
 
@@ -215,7 +268,6 @@ var PlayerRocket = (function () {
         this.rocketHeight = 20;
         this.rocketWidth = 20;
         this.rocketSpeed = 4;
-        this.rocketIsDead = false;
         this.rocketPosX = posX;
         this.rocketPosY = posY;
     }
@@ -234,6 +286,18 @@ var PlayerRocket = (function () {
     };
     PlayerRocket.prototype.getPosY = function () {
         return this.rocketPosY;
+    };
+
+    PlayerRocket.prototype.getWidth = function () {
+        return this.rocketWidth;
+    };
+
+    PlayerRocket.prototype.getHeight = function () {
+        return this.rocketHeight;
+    };
+
+    PlayerRocket.prototype.hasCollided = function () {
+        this.rocketIsDead = true;
     };
     return PlayerRocket;
 })();

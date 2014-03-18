@@ -43,7 +43,9 @@ class Game {
         this.globalData.newEntities = [];
         this.globalData.rocketEntites = [];
 
-        this.playerShip = new PlayerShip(0, 0);
+        // Set player's starting position
+        this.playerShip = new PlayerShip((this.canvasWidth / 2), this.canvasHeight - 100);
+
         this.collision = new CollisionDetection();
     }
 
@@ -64,7 +66,7 @@ class Game {
 
     public shoot() {
         var rocket = new PlayerRocket(this.playerShip.getPosX() + 10, this.playerShip.getPosY());
-        this.globalData.rocketEntites.push(rocket);
+        this.globalData.entities.push(rocket);
     }
 
     public draw() {
@@ -85,6 +87,8 @@ class Game {
         if (this.playerShip.movingDown) this.playerShip.moveDown();
 
         this.playerShip.draw(this.context);
+
+        this.collision.detectCollisions(this.globalData.entities);
 
         // Check expired
         for (i = this.globalData.entities.length - 1; i >= 0; i--) {
@@ -108,8 +112,8 @@ class Game {
         }
 
         // Draw rockets
-        for (var i = 0; i < this.globalData.rocketEntites.length; i++) {
-            var drawable = <IDrawable> this.globalData.rocketEntites[i];
+        for (var i = 0; i < this.globalData.entities.length; i++) {
+            var drawable = <IDrawable> this.globalData.entities[i];
             drawable.draw(this.context);
         }
     }
@@ -118,7 +122,50 @@ class Game {
 
 class CollisionDetection
 {
-    
+    //collidables: ICollidable[];
+
+    detectCollisions(collidables) {
+
+        for (var i = 0; i < collidables.length; i++) {
+            var entityA = <ICollidable> collidables[i];
+
+            for (var j = i + 1; j < collidables.length; j++) {
+                var entityB = <ICollidable> collidables[j];
+                /*if (!entityB.canCollide() || entityB.isDead()) {
+                    continue;
+                }*/
+
+                if (this.isColliding(entityA, entityB)) {
+                    console.log(entityA);
+                    entityA.hasCollided();
+                    entityB.hasCollided();
+                    //CallCollisionFunction(entityA, entityB);
+                }
+            }
+        }
+    }
+
+    isColliding(entityA: ICollidable, entityB: ICollidable) {
+        var widthA = entityA.getWidth();
+        var heightA = entityA.getHeight();
+        var widthB = entityB.getWidth();
+        var heightB = entityB.getHeight();
+
+        var leftA = entityA.getPosX() - (widthA / 2);
+        var topA = entityA.getPosY() - (heightA / 2);
+        var leftB = entityB.getPosX() - (widthB / 2);
+        var topB = entityB.getPosY() - (heightB / 2);
+
+        if (leftA < leftB + widthB &&
+            leftA + widthA > leftB &&
+            topA < topB + heightB &&
+            topA + heightA > topB) {
+            return true;
+        }
+        return false;
+
+    }
+
 }
 
 class PlayerShip implements IDrawable {
@@ -216,7 +263,7 @@ class PlayerShip implements IDrawable {
 
 }
 
-class Enemy implements IEnemey, IDrawable {
+class Enemy implements IEnemey, IDrawable, ICollidable {
 
     private enemyWidth: number;
     private enemyHeight: number;
@@ -255,9 +302,21 @@ class Enemy implements IEnemey, IDrawable {
         return this.enemyPosY;
     }
 
+    hasCollided() {
+        return true;
+    }
+
+    getWidth() {
+        return this.enemyWidth;
+    }
+
+    getHeight() {
+        return this.enemyHeight;
+    }
+
 }
 
-class PlayerRocket implements IDrawable {
+class PlayerRocket implements IDrawable, ICollidable {
 
     private rocketPosX: number;
     private rocketPosY: number;
@@ -270,7 +329,6 @@ class PlayerRocket implements IDrawable {
         this.rocketHeight = 20;
         this.rocketWidth = 20;
         this.rocketSpeed = 4;
-        this.rocketIsDead = false;
         this.rocketPosX = posX;
         this.rocketPosY = posY;
     }
@@ -290,6 +348,18 @@ class PlayerRocket implements IDrawable {
     }
     getPosY() {
         return this.rocketPosY;
+    }
+
+    getWidth() {
+        return this.rocketWidth;
+    }
+
+    getHeight() {
+        return this.rocketHeight;
+    }
+
+    hasCollided() {
+        this.rocketIsDead = true;
     }
 
 }
@@ -318,6 +388,14 @@ interface IDrawable {
     getPosX(): number;
     getPosY(): number;
     draw(context: CanvasRenderingContext2D);
+}
+
+interface ICollidable {
+    hasCollided();
+    getWidth();
+    getHeight();
+    getPosX();
+    getPosY();
 }
 
 window.onload = () => {
