@@ -45,6 +45,7 @@ class Game {
 
         // Set player's starting position
         this.playerShip = new PlayerShip((this.canvasWidth / 2), this.canvasHeight - 100);
+        this.globalData.entities.push(this.playerShip);
 
         this.collision = new CollisionDetection();
     }
@@ -86,7 +87,7 @@ class Game {
         if (this.playerShip.movingUp) this.playerShip.moveUp();
         if (this.playerShip.movingDown) this.playerShip.moveDown();
 
-        this.playerShip.draw(this.context);
+        //this.playerShip.draw(this.context);
 
         this.collision.detectCollisions(this.globalData.entities);
 
@@ -167,7 +168,7 @@ class CollisionDetection
 
 }
 
-class PlayerShip implements IDrawable {
+class PlayerShip implements IDrawable, ICollidable {
     
     public playerPosX: number;
     public playerPosY: number;
@@ -183,6 +184,8 @@ class PlayerShip implements IDrawable {
     public playerWidth: number;
     public playerHeight: number;
 
+    private playerHealth: number;
+
     constructor(posX: number, posY: number) {
         this.playerPosX = posX;
         this.playerPosY = posY;
@@ -192,6 +195,7 @@ class PlayerShip implements IDrawable {
 
         this.playerSpeed = 5;
         this.playerIsDead = false;
+        this.playerHealth = 100;
     }
 
     draw(context: CanvasRenderingContext2D) {
@@ -260,6 +264,20 @@ class PlayerShip implements IDrawable {
         this.movingDown = moveDown;
     }
 
+    getWidth() {
+        return this.playerWidth;
+    }
+
+    getHeight() {
+        return this.playerHeight;
+    }
+
+    takeDamage() {
+        this.playerHealth -= 20;
+        console.log("here" + this.playerHealth);
+        this.playerIsDead = (this.playerHealth <= 0);
+    }
+
 }
 
 class Enemy implements IEnemey, IDrawable, ICollidable {
@@ -317,8 +335,7 @@ class Enemy implements IEnemey, IDrawable, ICollidable {
         if (this.enemySize < 40) {
             this.enemyHealth = 0;
         } else {
-            this.enemyHealth -= 10;
-            console.log("heath: " + this.enemyHealth);
+            this.enemyHealth -= 50;
         }
         this.enemyIsDead = (this.enemyHealth <= 0);
     }
@@ -352,10 +369,6 @@ class PlayerRocket implements IDrawable, ICollidable {
     }
 
     isDead() {
-        if (this.rocketHealth == 0) {
-            this.rocketIsDead = true;
-        }
-        this.rocketIsDead = false;
         return this.rocketIsDead;
     }
 
@@ -375,7 +388,6 @@ class PlayerRocket implements IDrawable, ICollidable {
     }
     
     takeDamage() {
-        this.rocketHealth = 0;
         this.rocketIsDead = true;
     }
 

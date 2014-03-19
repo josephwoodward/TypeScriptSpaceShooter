@@ -25,6 +25,7 @@ var Game = (function () {
 
         // Set player's starting position
         this.playerShip = new PlayerShip((this.canvasWidth / 2), this.canvasHeight - 100);
+        this.globalData.entities.push(this.playerShip);
 
         this.collision = new CollisionDetection();
     }
@@ -67,8 +68,7 @@ var Game = (function () {
         if (this.playerShip.movingDown)
             this.playerShip.moveDown();
 
-        this.playerShip.draw(this.context);
-
+        //this.playerShip.draw(this.context);
         this.collision.detectCollisions(this.globalData.entities);
 
         for (i = this.globalData.entities.length - 1; i >= 0; i--) {
@@ -149,6 +149,7 @@ var PlayerShip = (function () {
 
         this.playerSpeed = 5;
         this.playerIsDead = false;
+        this.playerHealth = 100;
     }
     PlayerShip.prototype.draw = function (context) {
         var image = new Image();
@@ -215,6 +216,20 @@ var PlayerShip = (function () {
     PlayerShip.prototype.setMoveDown = function (moveDown) {
         this.movingDown = moveDown;
     };
+
+    PlayerShip.prototype.getWidth = function () {
+        return this.playerWidth;
+    };
+
+    PlayerShip.prototype.getHeight = function () {
+        return this.playerHeight;
+    };
+
+    PlayerShip.prototype.takeDamage = function () {
+        this.playerHealth -= 20;
+        console.log("here" + this.playerHealth);
+        this.playerIsDead = (this.playerHealth <= 0);
+    };
     return PlayerShip;
 })();
 
@@ -262,8 +277,7 @@ var Enemy = (function () {
         if (this.enemySize < 40) {
             this.enemyHealth = 0;
         } else {
-            this.enemyHealth -= 10;
-            console.log("heath: " + this.enemyHealth);
+            this.enemyHealth -= 50;
         }
         this.enemyIsDead = (this.enemyHealth <= 0);
     };
@@ -287,10 +301,6 @@ var PlayerRocket = (function () {
     };
 
     PlayerRocket.prototype.isDead = function () {
-        if (this.rocketHealth == 0) {
-            this.rocketIsDead = true;
-        }
-        this.rocketIsDead = false;
         return this.rocketIsDead;
     };
 
@@ -310,7 +320,6 @@ var PlayerRocket = (function () {
     };
 
     PlayerRocket.prototype.takeDamage = function () {
-        this.rocketHealth = 0;
         this.rocketIsDead = true;
     };
     return PlayerRocket;
