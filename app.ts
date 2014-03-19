@@ -139,6 +139,7 @@ class CollisionDetection
                     console.log(entityA);
                     entityA.hasCollided();
                     entityB.hasCollided();
+                    entityA.takeDamage();
                     //CallCollisionFunction(entityA, entityB);
                 }
             }
@@ -280,12 +281,12 @@ class Enemy implements IEnemey, IDrawable, ICollidable {
         this.enemyWidth = enemySize;
         
         this.speed = speed;
-        this.enemyIsDead = false;
     }
 
     draw(context: CanvasRenderingContext2D) {
         var image = new Image();
-        var descentY = this.enemyPosY++ * this.speed;
+        var descentY = (this.enemyPosY++) + this.speed;
+        this.enemyPosY = descentY;
         image.src = 'http://silveiraneto.net/downloads/asteroid.png';
         context.drawImage(image, this.enemyPosX, descentY, this.enemyWidth, this.enemyHeight);
     }
@@ -303,6 +304,7 @@ class Enemy implements IEnemey, IDrawable, ICollidable {
     }
 
     hasCollided() {
+        this.enemyIsDead = true;
         return true;
     }
 
@@ -314,6 +316,10 @@ class Enemy implements IEnemey, IDrawable, ICollidable {
         return this.enemyHeight;
     }
 
+    takeDamage() {
+        
+    }
+
 }
 
 class PlayerRocket implements IDrawable, ICollidable {
@@ -323,6 +329,7 @@ class PlayerRocket implements IDrawable, ICollidable {
     private rocketSpeed: number;
     private rocketWidth: number;
     private rocketHeight: number;
+    private rocketHealth: number;
     private rocketIsDead: boolean;
 
     constructor(posX: number, posY: number) {
@@ -331,6 +338,7 @@ class PlayerRocket implements IDrawable, ICollidable {
         this.rocketSpeed = 4;
         this.rocketPosX = posX;
         this.rocketPosY = posY;
+        this.rocketHealth = 100;
     }
 
     draw(context: CanvasRenderingContext2D) {
@@ -341,8 +349,13 @@ class PlayerRocket implements IDrawable, ICollidable {
     }
 
     isDead() {
+        if (this.rocketHealth == 0) {
+            this.rocketIsDead = true;
+        }
+        this.rocketIsDead = false;
         return this.rocketIsDead;
     }
+
     getPosX() {
         return this.rocketPosX;
     }
@@ -360,6 +373,10 @@ class PlayerRocket implements IDrawable, ICollidable {
 
     hasCollided() {
         this.rocketIsDead = true;
+    }
+
+    takeDamage() {
+        this.rocketHealth = 0;
     }
 
 }
@@ -396,6 +413,7 @@ interface ICollidable {
     getHeight();
     getPosX();
     getPosY();
+    takeDamage();
 }
 
 window.onload = () => {

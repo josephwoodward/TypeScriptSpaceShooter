@@ -115,6 +115,7 @@ var CollisionDetection = (function () {
                     console.log(entityA);
                     entityA.hasCollided();
                     entityB.hasCollided();
+                    entityA.takeDamage();
                     //CallCollisionFunction(entityA, entityB);
                 }
             }
@@ -228,11 +229,11 @@ var Enemy = (function () {
         this.enemyWidth = enemySize;
 
         this.speed = speed;
-        this.enemyIsDead = false;
     }
     Enemy.prototype.draw = function (context) {
         var image = new Image();
-        var descentY = this.enemyPosY++ * this.speed;
+        var descentY = (this.enemyPosY++) + this.speed;
+        this.enemyPosY = descentY;
         image.src = 'http://silveiraneto.net/downloads/asteroid.png';
         context.drawImage(image, this.enemyPosX, descentY, this.enemyWidth, this.enemyHeight);
     };
@@ -250,6 +251,7 @@ var Enemy = (function () {
     };
 
     Enemy.prototype.hasCollided = function () {
+        this.enemyIsDead = true;
         return true;
     };
 
@@ -259,6 +261,9 @@ var Enemy = (function () {
 
     Enemy.prototype.getHeight = function () {
         return this.enemyHeight;
+    };
+
+    Enemy.prototype.takeDamage = function () {
     };
     return Enemy;
 })();
@@ -270,6 +275,7 @@ var PlayerRocket = (function () {
         this.rocketSpeed = 4;
         this.rocketPosX = posX;
         this.rocketPosY = posY;
+        this.rocketHealth = 100;
     }
     PlayerRocket.prototype.draw = function (context) {
         var image = new Image();
@@ -279,8 +285,13 @@ var PlayerRocket = (function () {
     };
 
     PlayerRocket.prototype.isDead = function () {
+        if (this.rocketHealth == 0) {
+            this.rocketIsDead = true;
+        }
+        this.rocketIsDead = false;
         return this.rocketIsDead;
     };
+
     PlayerRocket.prototype.getPosX = function () {
         return this.rocketPosX;
     };
@@ -298,6 +309,10 @@ var PlayerRocket = (function () {
 
     PlayerRocket.prototype.hasCollided = function () {
         this.rocketIsDead = true;
+    };
+
+    PlayerRocket.prototype.takeDamage = function () {
+        this.rocketHealth = 0;
     };
     return PlayerRocket;
 })();
