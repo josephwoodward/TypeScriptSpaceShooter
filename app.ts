@@ -32,7 +32,7 @@ class Game {
         this.max = 20;
 
         this.enemyCollection = [];
-        this.enemyLimit = 30; //number of enemies allowed
+        this.enemyLimit = 20; //number of enemies allowed
         this.enemyDelay = 0; //iterations between generating new enemy
 
         this.canvasWidth = 900;
@@ -65,7 +65,7 @@ class Game {
     }
 
     public shoot() {
-        var rocket = new PlayerRocket(this.playerShip.getPosX() + 10, this.playerShip.getPosY());
+        var rocket = new PlayerRocket(this.playerShip.getPosX() + 6, this.playerShip.getPosY());
         this.globalData.entities.push(rocket);
     }
 
@@ -92,9 +92,8 @@ class Game {
 
         // Check expired
         for (i = this.globalData.entities.length - 1; i >= 0; i--) {
-            if (this.globalData.entities[i].getPosY() >= 500) {
+            if (this.globalData.entities[i].getPosY() >= 500 || this.globalData.entities[i].getPosY() <= -100) {
                 this.globalData.entities.splice(i, 1);
-                //console.log(this.globalData.entities[i].getPosY());
             }
         }
 
@@ -136,10 +135,9 @@ class CollisionDetection
                 }*/
 
                 if (this.isColliding(entityA, entityB)) {
-                    console.log(entityA);
-                    entityA.hasCollided();
-                    entityB.hasCollided();
+                    //console.log(entityA + " and " + entityB);
                     entityA.takeDamage();
+                    entityB.takeDamage();
                     //CallCollisionFunction(entityA, entityB);
                 }
             }
@@ -272,13 +270,17 @@ class Enemy implements IEnemey, IDrawable, ICollidable {
     private enemyPosX: number;
     public enemyPosY: number;
     public enemyIsDead: boolean;
+    public enemySize: number;
+    public enemyHealth: number;
 
     constructor(posX: number, posY: number, enemySize: number, speed: number) {
         this.enemyPosX = posX;
         this.enemyPosY = posY;
 
+        this.enemySize = enemySize;
         this.enemyHeight = enemySize;
         this.enemyWidth = enemySize;
+        this.enemyHealth = 100;
         
         this.speed = speed;
     }
@@ -302,12 +304,7 @@ class Enemy implements IEnemey, IDrawable, ICollidable {
     getPosY() {
         return this.enemyPosY;
     }
-
-    hasCollided() {
-        this.enemyIsDead = true;
-        return true;
-    }
-
+    
     getWidth() {
         return this.enemyWidth;
     }
@@ -317,7 +314,13 @@ class Enemy implements IEnemey, IDrawable, ICollidable {
     }
 
     takeDamage() {
-        
+        if (this.enemySize < 40) {
+            this.enemyHealth = 0;
+        } else {
+            this.enemyHealth -= 10;
+            console.log("heath: " + this.enemyHealth);
+        }
+        this.enemyIsDead = (this.enemyHealth <= 0);
     }
 
 }
@@ -370,13 +373,10 @@ class PlayerRocket implements IDrawable, ICollidable {
     getHeight() {
         return this.rocketHeight;
     }
-
-    hasCollided() {
-        this.rocketIsDead = true;
-    }
-
+    
     takeDamage() {
         this.rocketHealth = 0;
+        this.rocketIsDead = true;
     }
 
 }
@@ -387,7 +387,7 @@ class EnemyFactory
         var randomX = Math.floor(Math.random() * 800) + 1;
         var size = Math.floor(Math.random() * 40) + 20;
 
-        var speed = Math.floor(Math.random() * 3) + 1;
+        var speed = Math.floor(Math.random() * 2) + 1;
         /*if (size >= 25) {
             speed = Math.floor(Math.random() * 1) + 1;
         }*/
@@ -395,7 +395,7 @@ class EnemyFactory
         return new Enemy(randomX, -40, size, speed);
     }    
 }
-
+ 
 interface IEnemey {
 
 }
@@ -408,7 +408,6 @@ interface IDrawable {
 }
 
 interface ICollidable {
-    hasCollided();
     getWidth();
     getHeight();
     getPosX();
@@ -420,22 +419,25 @@ window.onload = () => {
 
     var game = new Game();
 
-    document.onkeydown = checkKey;
-    document.onkeyup = checkUpKey;
+    document.onkeydown = keyDownCheck;
+    document.onkeyup = keyUpCheck;
+    //document.onkeypress = keyPressCheck;
 
-    function checkKey(e) {
+    function keyDownCheck(e) {
         e = e || window.event;
 
         if (e.keyCode == 37) game.playerShip.setMoveLeft(true);
         if (e.keyCode == 38) game.playerShip.setMoveUp(true);
         if (e.keyCode == 39) game.playerShip.setMoveRight(true);
         if (e.keyCode == 40) game.playerShip.setMoveDown(true);
-
-        if (e.keyCode == 32) game.shoot();
     }
 
+    /*function keyPressCheck(e) {
+        e = e || window.event;
+        //if (e.keyCode == 32) game.shoot();
+    }*/
 
-    function checkUpKey(e) {
+    function keyUpCheck(e) {
         e = e || window.event;
         
         if (e.keyCode == 37) game.playerShip.setMoveLeft(false);

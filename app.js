@@ -12,7 +12,7 @@ var Game = (function () {
         this.max = 20;
 
         this.enemyCollection = [];
-        this.enemyLimit = 30; //number of enemies allowed
+        this.enemyLimit = 20; //number of enemies allowed
         this.enemyDelay = 0; //iterations between generating new enemy
 
         this.canvasWidth = 900;
@@ -43,7 +43,7 @@ var Game = (function () {
     };
 
     Game.prototype.shoot = function () {
-        var rocket = new PlayerRocket(this.playerShip.getPosX() + 10, this.playerShip.getPosY());
+        var rocket = new PlayerRocket(this.playerShip.getPosX() + 6, this.playerShip.getPosY());
         this.globalData.entities.push(rocket);
     };
 
@@ -72,9 +72,8 @@ var Game = (function () {
         this.collision.detectCollisions(this.globalData.entities);
 
         for (i = this.globalData.entities.length - 1; i >= 0; i--) {
-            if (this.globalData.entities[i].getPosY() >= 500) {
+            if (this.globalData.entities[i].getPosY() >= 500 || this.globalData.entities[i].getPosY() <= -100) {
                 this.globalData.entities.splice(i, 1);
-                //console.log(this.globalData.entities[i].getPosY());
             }
         }
 
@@ -112,10 +111,9 @@ var CollisionDetection = (function () {
                 continue;
                 }*/
                 if (this.isColliding(entityA, entityB)) {
-                    console.log(entityA);
-                    entityA.hasCollided();
-                    entityB.hasCollided();
+                    //console.log(entityA + " and " + entityB);
                     entityA.takeDamage();
+                    entityB.takeDamage();
                     //CallCollisionFunction(entityA, entityB);
                 }
             }
@@ -225,8 +223,10 @@ var Enemy = (function () {
         this.enemyPosX = posX;
         this.enemyPosY = posY;
 
+        this.enemySize = enemySize;
         this.enemyHeight = enemySize;
         this.enemyWidth = enemySize;
+        this.enemyHealth = 100;
 
         this.speed = speed;
     }
@@ -250,11 +250,6 @@ var Enemy = (function () {
         return this.enemyPosY;
     };
 
-    Enemy.prototype.hasCollided = function () {
-        this.enemyIsDead = true;
-        return true;
-    };
-
     Enemy.prototype.getWidth = function () {
         return this.enemyWidth;
     };
@@ -264,6 +259,13 @@ var Enemy = (function () {
     };
 
     Enemy.prototype.takeDamage = function () {
+        if (this.enemySize < 40) {
+            this.enemyHealth = 0;
+        } else {
+            this.enemyHealth -= 10;
+            console.log("heath: " + this.enemyHealth);
+        }
+        this.enemyIsDead = (this.enemyHealth <= 0);
     };
     return Enemy;
 })();
@@ -307,12 +309,9 @@ var PlayerRocket = (function () {
         return this.rocketHeight;
     };
 
-    PlayerRocket.prototype.hasCollided = function () {
-        this.rocketIsDead = true;
-    };
-
     PlayerRocket.prototype.takeDamage = function () {
         this.rocketHealth = 0;
+        this.rocketIsDead = true;
     };
     return PlayerRocket;
 })();
@@ -324,7 +323,7 @@ var EnemyFactory = (function () {
         var randomX = Math.floor(Math.random() * 800) + 1;
         var size = Math.floor(Math.random() * 40) + 20;
 
-        var speed = Math.floor(Math.random() * 3) + 1;
+        var speed = Math.floor(Math.random() * 2) + 1;
 
         /*if (size >= 25) {
         speed = Math.floor(Math.random() * 1) + 1;
@@ -337,10 +336,11 @@ var EnemyFactory = (function () {
 window.onload = function () {
     var game = new Game();
 
-    document.onkeydown = checkKey;
-    document.onkeyup = checkUpKey;
+    document.onkeydown = keyDownCheck;
+    document.onkeyup = keyUpCheck;
 
-    function checkKey(e) {
+    //document.onkeypress = keyPressCheck;
+    function keyDownCheck(e) {
         e = e || window.event;
 
         if (e.keyCode == 37)
@@ -351,12 +351,13 @@ window.onload = function () {
             game.playerShip.setMoveRight(true);
         if (e.keyCode == 40)
             game.playerShip.setMoveDown(true);
-
-        if (e.keyCode == 32)
-            game.shoot();
     }
 
-    function checkUpKey(e) {
+    /*function keyPressCheck(e) {
+    e = e || window.event;
+    //if (e.keyCode == 32) game.shoot();
+    }*/
+    function keyUpCheck(e) {
         e = e || window.event;
 
         if (e.keyCode == 37)
