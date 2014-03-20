@@ -1,4 +1,4 @@
-var GlobalData = (function () {
+﻿var GlobalData = (function () {
     function GlobalData() {
     }
     return GlobalData;
@@ -44,7 +44,9 @@ var Game = (function () {
     };
 
     Game.prototype.shoot = function () {
-        var rocket = new PlayerRocket(this.playerShip.getPosX() + 6, this.playerShip.getPosY());
+        if (this.playerShip.isDead())
+            return;
+        var rocket = new PlayerRocket(this.playerShip.getPosX() + 6, this.playerShip.getPosY() - 30);
         this.globalData.entities.push(rocket);
     };
 
@@ -88,8 +90,8 @@ var Game = (function () {
             drawable.draw(this.context);
         }
 
-        for (var i = 0; i < this.globalData.entities.length; i++) {
-            var drawable = this.globalData.entities[i];
+        for (var i = 0; i < this.globalData.rocketEntites.length; i++) {
+            var drawable = this.globalData.rocketEntites[i];
             drawable.draw(this.context);
         }
     };
@@ -114,7 +116,6 @@ var CollisionDetection = (function () {
                     //console.log(entityA + " and " + entityB);
                     entityA.takeDamage();
                     entityB.takeDamage();
-                    //CallCollisionFunction(entityA, entityB);
                 }
             }
         }
@@ -147,7 +148,7 @@ var PlayerShip = (function () {
         this.playerWidth = 40;
         this.playerHeight = 40;
 
-        this.playerSpeed = 5;
+        this.playerSpeed = 6;
         this.playerIsDead = false;
         this.playerHealth = 100;
     }
@@ -288,7 +289,7 @@ var PlayerRocket = (function () {
     function PlayerRocket(posX, posY) {
         this.rocketHeight = 20;
         this.rocketWidth = 20;
-        this.rocketSpeed = 4;
+        this.rocketSpeed = 8;
         this.rocketPosX = posX;
         this.rocketPosY = posY;
         this.rocketHealth = 100;

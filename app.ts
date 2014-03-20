@@ -66,7 +66,8 @@ class Game {
     }
 
     public shoot() {
-        var rocket = new PlayerRocket(this.playerShip.getPosX() + 6, this.playerShip.getPosY());
+        if (this.playerShip.isDead()) return;
+        var rocket = new PlayerRocket(this.playerShip.getPosX() + 6, this.playerShip.getPosY() - 30);
         this.globalData.entities.push(rocket);
     }
 
@@ -91,6 +92,15 @@ class Game {
 
         this.collision.detectCollisions(this.globalData.entities);
 
+        //this.collision.rocketCollision(this.globalData.rocketEntites);
+
+        /*for (var i = 0; i < this.globalData.rocketEntites.length; i++) {
+            var rocket = this.globalData.rocketEntites[i];
+            
+        }*/
+
+
+
         // Check expired
         for (i = this.globalData.entities.length - 1; i >= 0; i--) {
             if (this.globalData.entities[i].getPosY() >= 500 || this.globalData.entities[i].getPosY() <= -100) {
@@ -112,10 +122,11 @@ class Game {
         }
 
         // Draw rockets
-        for (var i = 0; i < this.globalData.entities.length; i++) {
-            var drawable = <IDrawable> this.globalData.entities[i];
+        for (var i = 0; i < this.globalData.rocketEntites.length; i++) {
+            var drawable = <IDrawable> this.globalData.rocketEntites[i];
             drawable.draw(this.context);
         }
+
     }
 
 }
@@ -139,7 +150,6 @@ class CollisionDetection
                     //console.log(entityA + " and " + entityB);
                     entityA.takeDamage();
                     entityB.takeDamage();
-                    //CallCollisionFunction(entityA, entityB);
                 }
             }
         }
@@ -193,7 +203,7 @@ class PlayerShip implements IDrawable, ICollidable {
         this.playerWidth = 40;
         this.playerHeight = 40;
 
-        this.playerSpeed = 5;
+        this.playerSpeed = 6;
         this.playerIsDead = false;
         this.playerHealth = 100;
     }
@@ -355,7 +365,7 @@ class PlayerRocket implements IDrawable, ICollidable {
     constructor(posX: number, posY: number) {
         this.rocketHeight = 20;
         this.rocketWidth = 20;
-        this.rocketSpeed = 4;
+        this.rocketSpeed = 8;
         this.rocketPosX = posX;
         this.rocketPosY = posY;
         this.rocketHealth = 100;
