@@ -1,7 +1,7 @@
 class GlobalData {
-    entities: IDrawable[];
+    enemies: IDrawable[];
     newEntities: IDrawable[];
-    rocketEntites: IDrawable[];
+    rockets: IDrawable[];
 }
 
 class Game {
@@ -31,31 +31,28 @@ class Game {
         this.min = 20;
         this.max = 20;
 
-        this.enemyCollection = [];
-        this.enemyLimit = 20; //number of enemies allowed
+        this.enemyLimit = 2; //number of enemies allowed
         this.enemyDelay = 0; //iterations between generating new enemy
 
         this.canvasWidth = 900;
         this.canvasHeight = 500;
 
         this.globalData = new GlobalData();
-        this.globalData.entities = [];
-        this.globalData.newEntities = [];
-        this.globalData.rocketEntites = [];
+        this.globalData.enemies = [];
+        this.globalData.rockets = [];
+
+        this.collision = new CollisionDetection();
 
         // Set player's starting position
         this.playerShip = new PlayerShip((this.canvasWidth / 2), this.canvasHeight - 100);
-        this.globalData.entities.push(this.playerShip);
-
-        this.collision = new CollisionDetection();
     }
 
     public step() {
         var enemyFactory = new EnemyFactory();
         this.enemyDelay++;
-        if (this.globalData.entities.length <= this.enemyLimit) {
+        if (this.globalData.enemies.length <= this.enemyLimit) {
             if (this.enemyDelay >= 40) {
-                this.globalData.entities.push(enemyFactory.createRandomEnemy());
+                this.globalData.enemies.push(enemyFactory.createRandomEnemy());
                 this.enemyDelay = 0;
             }
         }
@@ -67,8 +64,8 @@ class Game {
 
     public shoot() {
         if (this.playerShip.isDead()) return;
-        var rocket = new PlayerRocket(this.playerShip.getPosX() + 6, this.playerShip.getPosY() - 30);
-        this.globalData.entities.push(rocket);
+        var rocket = new PlayerRocket(this.playerShip.getPosX() + 10, this.playerShip.getPosY());
+        this.globalData.rockets.push(rocket);
     }
 
     public draw() {
@@ -88,206 +85,51 @@ class Game {
         if (this.playerShip.movingUp) this.playerShip.moveUp();
         if (this.playerShip.movingDown) this.playerShip.moveDown();
 
-        //this.playerShip.draw(this.context);
+        if (!this.playerShip.isDead()) {
+            this.playerShip.draw(this.context);    
+        }
 
-        this.collision.detectCollisions(this.globalData.entities);
+        this.collision.detectCollisions(this.globalData.rockets, this.globalData.enemies);
 
-        //this.collision.rocketCollision(this.globalData.rocketEntites);
+        this.collision.detectCollisionOnPoint(this.playerShip, this.globalData.enemies);
 
-        /*for (var i = 0; i < this.globalData.rocketEntites.length; i++) {
-            var rocket = this.globalData.rocketEntites[i];
-            
-        }*/
-
-
+        var i;
 
         // Check expired
-        for (i = this.globalData.entities.length - 1; i >= 0; i--) {
-            if (this.globalData.entities[i].getPosY() >= 500 || this.globalData.entities[i].getPosY() <= -100) {
-                this.globalData.entities.splice(i, 1);
+        for (i = this.globalData.enemies.length - 1; i >= 0; i--) {
+            if (this.globalData.enemies[i].getPosY() >= 500 || this.globalData.enemies[i].getPosY() <= -100) {
+                this.globalData.enemies.splice(i, 1);
             }
         }
 
         // Remove dead entities
-        for (i = this.globalData.entities.length - 1; i >= 0; i--) {
-            if (this.globalData.entities[i].isDead()) {
-                this.globalData.entities.splice(i, 1);
+        for (i = this.globalData.enemies.length - 1; i >= 0; i--) {
+            if (this.globalData.enemies[i].isDead()) {
+                this.globalData.enemies.splice(i, 1);
+            }
+        }
+        for (i = this.globalData.rockets.length - 1; i >= 0; i--) {
+            if (this.globalData.rockets[i].isDead()) {
+                this.globalData.rockets.splice(i, 1);
             }
         }
 
-        // Draw entities
-        for (var i = 0; i < this.globalData.entities.length; i++) {
-            var drawable = <IDrawable> this.globalData.entities[i];
+        // Draw enemies
+        var drawable;
+        for (i = 0; i < this.globalData.enemies.length; i++) {
+            drawable = <IDrawable> this.globalData.enemies[i];
             drawable.draw(this.context);
         }
 
         // Draw rockets
-        for (var i = 0; i < this.globalData.rocketEntites.length; i++) {
-            var drawable = <IDrawable> this.globalData.rocketEntites[i];
-            drawable.draw(this.context);
-        }
-
-    }
-
-}
-
-class CollisionDetection
-{
-    //collidables: ICollidable[];
-
-    detectCollisions(collidables) {
-
-        for (var i = 0; i < collidables.length; i++) {
-            var entityA = <ICollidable> collidables[i];
-
-            for (var j = i + 1; j < collidables.length; j++) {
-                var entityB = <ICollidable> collidables[j];
-                /*if (!entityB.canCollide() || entityB.isDead()) {
-                    continue;
-                }*/
-
-                if (this.isColliding(entityA, entityB)) {
-                    //console.log(entityA + " and " + entityB);
-                    entityA.takeDamage();
-                    entityB.takeDamage();
-                }
+        for (i = 0; i < this.globalData.rockets.length; i++) {
+            drawable = <PlayerRocket> this.globalData.rockets[i];
+            if (!drawable.isDead()) {
+                drawable.draw(this.context);                
             }
         }
-    }
-
-    isColliding(entityA: ICollidable, entityB: ICollidable) {
-        var widthA = entityA.getWidth();
-        var heightA = entityA.getHeight();
-        var widthB = entityB.getWidth();
-        var heightB = entityB.getHeight();
-
-        var leftA = entityA.getPosX() - (widthA / 2);
-        var topA = entityA.getPosY() - (heightA / 2);
-        var leftB = entityB.getPosX() - (widthB / 2);
-        var topB = entityB.getPosY() - (heightB / 2);
-
-        if (leftA < leftB + widthB &&
-            leftA + widthA > leftB &&
-            topA < topB + heightB &&
-            topA + heightA > topB) {
-            return true;
-        }
-        return false;
 
     }
-
-}
-
-class PlayerShip implements IDrawable, ICollidable {
-    
-    public playerPosX: number;
-    public playerPosY: number;
-    public playerCenter: number;
-    public playerSpeed: number;
-    public playerIsDead: boolean;
-
-    public movingLeft: boolean;
-    public movingRight: boolean;
-    public movingUp: boolean;
-    public movingDown: boolean;
-
-    public playerWidth: number;
-    public playerHeight: number;
-
-    private playerHealth: number;
-
-    constructor(posX: number, posY: number) {
-        this.playerPosX = posX;
-        this.playerPosY = posY;
-
-        this.playerWidth = 40;
-        this.playerHeight = 40;
-
-        this.playerSpeed = 6;
-        this.playerIsDead = false;
-        this.playerHealth = 100;
-    }
-
-    draw(context: CanvasRenderingContext2D) {
-        var image = new Image();
-        image.src = 'http://www.pixeljoint.com/files/icons/spaceship1_final.png';
-        context.drawImage(image, this.playerPosX, this.playerPosY, this.playerWidth, this.playerHeight);
-    }
-
-    isDead() {
-        return this.playerIsDead;
-    }
-
-    getPosX() {
-        return this.playerPosX;
-    }
-
-    getPosY() {
-        return this.playerPosY;
-    }
-
-    moveLeft() {
-        if (this.playerPosX < -(this.playerWidth)) {
-            this.playerPosX = 900;
-        } else {
-            this.playerPosX -= this.playerSpeed;
-        }
-    }
-
-    moveRight() {
-        if (this.playerPosX >= 890) {
-            this.playerPosX = -(this.playerWidth);
-        } else {
-            this.playerPosX += this.playerSpeed;
-        }
-    }
-
-    moveUp() {
-        if (this.playerPosY <= -(this.playerHeight)) {
-            this.playerPosY = 500;
-        } else {
-            this.playerPosY -= this.playerSpeed;
-        }
-    }
-
-    moveDown() {
-        if (this.playerPosY >= (500 + (this.playerHeight / 2))) {
-            this.playerPosY = -(this.playerHeight - 5);
-        } else {
-            this.playerPosY += this.playerSpeed;
-        }
-    }
-
-    setMoveLeft(moveLeft: boolean) {
-        this.movingLeft = moveLeft;
-    }
-
-    setMoveRight(moveRight: boolean) {
-        this.movingRight = moveRight;
-    }
-
-    setMoveUp(moveUp: boolean) {
-        this.movingUp = moveUp;
-    }
-
-    setMoveDown(moveDown: boolean) {
-        this.movingDown = moveDown;
-    }
-
-    getWidth() {
-        return this.playerWidth;
-    }
-
-    getHeight() {
-        return this.playerHeight;
-    }
-
-    takeDamage() {
-        this.playerHealth -= 20;
-        console.log("here" + this.playerHealth);
-        this.playerIsDead = (this.playerHealth <= 0);
-    }
-
 }
 
 class Enemy implements IEnemey, IDrawable, ICollidable {
@@ -403,40 +245,6 @@ class PlayerRocket implements IDrawable, ICollidable {
 
 }
 
-class EnemyFactory
-{
-    createRandomEnemy() {
-        var randomX = Math.floor(Math.random() * 800) + 1;
-        var size = Math.floor(Math.random() * 40) + 20;
-
-        var speed = Math.floor(Math.random() * 2) + 1;
-        /*if (size >= 25) {
-            speed = Math.floor(Math.random() * 1) + 1;
-        }*/
-
-        return new Enemy(randomX, -40, size, speed);
-    }    
-}
- 
-interface IEnemey {
-
-}
-
-interface IDrawable {
-    isDead(): boolean;
-    getPosX(): number;
-    getPosY(): number;
-    draw(context: CanvasRenderingContext2D);
-}
-
-interface ICollidable {
-    getWidth();
-    getHeight();
-    getPosX();
-    getPosY();
-    takeDamage();
-}
-
 window.onload = () => {
 
     var game = new Game();
@@ -482,3 +290,8 @@ window.onload = () => {
     })();
 
 };
+
+/// <reference path="Collision.ts"/>
+/// <reference path="Player.ts"/>
+/// <reference path="EnemyFactory.ts"/>
+/// <reference path="Interfaces.ts"/>

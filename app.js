@@ -1,4 +1,4 @@
-﻿var GlobalData = (function () {
+var GlobalData = (function () {
     function GlobalData() {
     }
     return GlobalData;
@@ -11,30 +11,27 @@ var Game = (function () {
         this.min = 20;
         this.max = 20;
 
-        this.enemyCollection = [];
-        this.enemyLimit = 20; //number of enemies allowed
+        this.enemyLimit = 2; //number of enemies allowed
         this.enemyDelay = 0; //iterations between generating new enemy
 
         this.canvasWidth = 900;
         this.canvasHeight = 500;
 
         this.globalData = new GlobalData();
-        this.globalData.entities = [];
-        this.globalData.newEntities = [];
-        this.globalData.rocketEntites = [];
+        this.globalData.enemies = [];
+        this.globalData.rockets = [];
+
+        this.collision = new CollisionDetection();
 
         // Set player's starting position
         this.playerShip = new PlayerShip((this.canvasWidth / 2), this.canvasHeight - 100);
-        this.globalData.entities.push(this.playerShip);
-
-        this.collision = new CollisionDetection();
     }
     Game.prototype.step = function () {
         var enemyFactory = new EnemyFactory();
         this.enemyDelay++;
-        if (this.globalData.entities.length <= this.enemyLimit) {
+        if (this.globalData.enemies.length <= this.enemyLimit) {
             if (this.enemyDelay >= 40) {
-                this.globalData.entities.push(enemyFactory.createRandomEnemy());
+                this.globalData.enemies.push(enemyFactory.createRandomEnemy());
                 this.enemyDelay = 0;
             }
         }
@@ -46,8 +43,8 @@ var Game = (function () {
     Game.prototype.shoot = function () {
         if (this.playerShip.isDead())
             return;
-        var rocket = new PlayerRocket(this.playerShip.getPosX() + 6, this.playerShip.getPosY() - 30);
-        this.globalData.entities.push(rocket);
+        var rocket = new PlayerRocket(this.playerShip.getPosX() + 10, this.playerShip.getPosY());
+        this.globalData.rockets.push(rocket);
     };
 
     Game.prototype.draw = function () {
@@ -70,168 +67,48 @@ var Game = (function () {
         if (this.playerShip.movingDown)
             this.playerShip.moveDown();
 
-        //this.playerShip.draw(this.context);
-        this.collision.detectCollisions(this.globalData.entities);
+        if (!this.playerShip.isDead()) {
+            this.playerShip.draw(this.context);
+        }
 
-        for (i = this.globalData.entities.length - 1; i >= 0; i--) {
-            if (this.globalData.entities[i].getPosY() >= 500 || this.globalData.entities[i].getPosY() <= -100) {
-                this.globalData.entities.splice(i, 1);
+        this.collision.detectCollisions(this.globalData.rockets, this.globalData.enemies);
+
+        this.collision.detectCollisionOnPoint(this.playerShip, this.globalData.enemies);
+
+        var i;
+
+        for (i = this.globalData.enemies.length - 1; i >= 0; i--) {
+            if (this.globalData.enemies[i].getPosY() >= 500 || this.globalData.enemies[i].getPosY() <= -100) {
+                this.globalData.enemies.splice(i, 1);
             }
         }
 
-        for (i = this.globalData.entities.length - 1; i >= 0; i--) {
-            if (this.globalData.entities[i].isDead()) {
-                this.globalData.entities.splice(i, 1);
+        for (i = this.globalData.enemies.length - 1; i >= 0; i--) {
+            if (this.globalData.enemies[i].isDead()) {
+                this.globalData.enemies.splice(i, 1);
+            }
+        }
+        for (i = this.globalData.rockets.length - 1; i >= 0; i--) {
+            if (this.globalData.rockets[i].isDead()) {
+                this.globalData.rockets.splice(i, 1);
             }
         }
 
-        for (var i = 0; i < this.globalData.entities.length; i++) {
-            var drawable = this.globalData.entities[i];
+        // Draw enemies
+        var drawable;
+        for (i = 0; i < this.globalData.enemies.length; i++) {
+            drawable = this.globalData.enemies[i];
             drawable.draw(this.context);
         }
 
-        for (var i = 0; i < this.globalData.rocketEntites.length; i++) {
-            var drawable = this.globalData.rocketEntites[i];
-            drawable.draw(this.context);
+        for (i = 0; i < this.globalData.rockets.length; i++) {
+            drawable = this.globalData.rockets[i];
+            if (!drawable.isDead()) {
+                drawable.draw(this.context);
+            }
         }
     };
     return Game;
-})();
-
-var CollisionDetection = (function () {
-    function CollisionDetection() {
-    }
-    //collidables: ICollidable[];
-    CollisionDetection.prototype.detectCollisions = function (collidables) {
-        for (var i = 0; i < collidables.length; i++) {
-            var entityA = collidables[i];
-
-            for (var j = i + 1; j < collidables.length; j++) {
-                var entityB = collidables[j];
-
-                /*if (!entityB.canCollide() || entityB.isDead()) {
-                continue;
-                }*/
-                if (this.isColliding(entityA, entityB)) {
-                    //console.log(entityA + " and " + entityB);
-                    entityA.takeDamage();
-                    entityB.takeDamage();
-                }
-            }
-        }
-    };
-
-    CollisionDetection.prototype.isColliding = function (entityA, entityB) {
-        var widthA = entityA.getWidth();
-        var heightA = entityA.getHeight();
-        var widthB = entityB.getWidth();
-        var heightB = entityB.getHeight();
-
-        var leftA = entityA.getPosX() - (widthA / 2);
-        var topA = entityA.getPosY() - (heightA / 2);
-        var leftB = entityB.getPosX() - (widthB / 2);
-        var topB = entityB.getPosY() - (heightB / 2);
-
-        if (leftA < leftB + widthB && leftA + widthA > leftB && topA < topB + heightB && topA + heightA > topB) {
-            return true;
-        }
-        return false;
-    };
-    return CollisionDetection;
-})();
-
-var PlayerShip = (function () {
-    function PlayerShip(posX, posY) {
-        this.playerPosX = posX;
-        this.playerPosY = posY;
-
-        this.playerWidth = 40;
-        this.playerHeight = 40;
-
-        this.playerSpeed = 6;
-        this.playerIsDead = false;
-        this.playerHealth = 100;
-    }
-    PlayerShip.prototype.draw = function (context) {
-        var image = new Image();
-        image.src = 'http://www.pixeljoint.com/files/icons/spaceship1_final.png';
-        context.drawImage(image, this.playerPosX, this.playerPosY, this.playerWidth, this.playerHeight);
-    };
-
-    PlayerShip.prototype.isDead = function () {
-        return this.playerIsDead;
-    };
-
-    PlayerShip.prototype.getPosX = function () {
-        return this.playerPosX;
-    };
-
-    PlayerShip.prototype.getPosY = function () {
-        return this.playerPosY;
-    };
-
-    PlayerShip.prototype.moveLeft = function () {
-        if (this.playerPosX < -(this.playerWidth)) {
-            this.playerPosX = 900;
-        } else {
-            this.playerPosX -= this.playerSpeed;
-        }
-    };
-
-    PlayerShip.prototype.moveRight = function () {
-        if (this.playerPosX >= 890) {
-            this.playerPosX = -(this.playerWidth);
-        } else {
-            this.playerPosX += this.playerSpeed;
-        }
-    };
-
-    PlayerShip.prototype.moveUp = function () {
-        if (this.playerPosY <= -(this.playerHeight)) {
-            this.playerPosY = 500;
-        } else {
-            this.playerPosY -= this.playerSpeed;
-        }
-    };
-
-    PlayerShip.prototype.moveDown = function () {
-        if (this.playerPosY >= (500 + (this.playerHeight / 2))) {
-            this.playerPosY = -(this.playerHeight - 5);
-        } else {
-            this.playerPosY += this.playerSpeed;
-        }
-    };
-
-    PlayerShip.prototype.setMoveLeft = function (moveLeft) {
-        this.movingLeft = moveLeft;
-    };
-
-    PlayerShip.prototype.setMoveRight = function (moveRight) {
-        this.movingRight = moveRight;
-    };
-
-    PlayerShip.prototype.setMoveUp = function (moveUp) {
-        this.movingUp = moveUp;
-    };
-
-    PlayerShip.prototype.setMoveDown = function (moveDown) {
-        this.movingDown = moveDown;
-    };
-
-    PlayerShip.prototype.getWidth = function () {
-        return this.playerWidth;
-    };
-
-    PlayerShip.prototype.getHeight = function () {
-        return this.playerHeight;
-    };
-
-    PlayerShip.prototype.takeDamage = function () {
-        this.playerHealth -= 20;
-        console.log("here" + this.playerHealth);
-        this.playerIsDead = (this.playerHealth <= 0);
-    };
-    return PlayerShip;
 })();
 
 var Enemy = (function () {
@@ -324,23 +201,6 @@ var PlayerRocket = (function () {
         this.rocketIsDead = true;
     };
     return PlayerRocket;
-})();
-
-var EnemyFactory = (function () {
-    function EnemyFactory() {
-    }
-    EnemyFactory.prototype.createRandomEnemy = function () {
-        var randomX = Math.floor(Math.random() * 800) + 1;
-        var size = Math.floor(Math.random() * 40) + 20;
-
-        var speed = Math.floor(Math.random() * 2) + 1;
-
-        /*if (size >= 25) {
-        speed = Math.floor(Math.random() * 1) + 1;
-        }*/
-        return new Enemy(randomX, -40, size, speed);
-    };
-    return EnemyFactory;
 })();
 
 window.onload = function () {

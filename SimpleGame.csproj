@@ -18,11 +18,15 @@
   </PropertyGroup>
   <ItemGroup>
     <Content Include="app.css" />
+    <TypeScriptCompile Include="EnemyFactory.ts" />
     <Content Include="index.htm" />
     <Content Include="web.config" />
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="app.ts" />
+    <TypeScriptCompile Include="Collision.ts" />
+    <TypeScriptCompile Include="Interfaces.ts" />
+    <TypeScriptCompile Include="Player.ts" />
   </ItemGroup>
   <ItemGroup>
     <None Include="web.Debug.config">
