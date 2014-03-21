@@ -1,4 +1,4 @@
-var CollisionDetection = (function () {
+﻿var CollisionDetection = (function () {
     function CollisionDetection() {
     }
     CollisionDetection.prototype.detectCollisions = function (collidables1, collidables2) {
@@ -24,7 +24,6 @@ var CollisionDetection = (function () {
             if (this.isColliding(entityA, entityB)) {
                 entityA.takeDamage();
                 entityB.takeDamage();
-                console.log(entityA);
             }
         }
     };

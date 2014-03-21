@@ -2,6 +2,7 @@ class GlobalData {
     enemies: IDrawable[];
     newEntities: IDrawable[];
     rockets: IDrawable[];
+    expiring: IDrawable[];
 }
 
 class Game {
@@ -40,6 +41,7 @@ class Game {
         this.globalData = new GlobalData();
         this.globalData.enemies = [];
         this.globalData.rockets = [];
+        this.globalData.expiring = [];
 
         this.collision = new CollisionDetection();
 
@@ -105,6 +107,7 @@ class Game {
         // Remove dead entities
         for (i = this.globalData.enemies.length - 1; i >= 0; i--) {
             if (this.globalData.enemies[i].isDead()) {
+                this.globalData.expiring.push(this.globalData.enemies[i]);
                 this.globalData.enemies.splice(i, 1);
             }
         }
@@ -129,6 +132,12 @@ class Game {
             }
         }
 
+        // Draw expiring
+        for (i = 0; i < this.globalData.expiring.length; i++) {
+            drawable = <IDrawable> this.globalData.expiring[i];
+            drawable.draw(this.context);
+        }
+
     }
 }
 
@@ -142,6 +151,8 @@ class Enemy implements IEnemey, IDrawable, ICollidable {
     public enemyIsDead: boolean;
     public enemySize: number;
     public enemyHealth: number;
+    private sprite: string;
+    private transpareny: number;
 
     constructor(posX: number, posY: number, enemySize: number, speed: number) {
         this.enemyPosX = posX;
@@ -151,16 +162,30 @@ class Enemy implements IEnemey, IDrawable, ICollidable {
         this.enemyHeight = enemySize;
         this.enemyWidth = enemySize;
         this.enemyHealth = 100;
+        this.transpareny = 0.9;
         
         this.speed = speed;
+        this.sprite = 'http://opengameart.org/sites/default/files/explosion2.png';
     }
 
     draw(context: CanvasRenderingContext2D) {
-        var image = new Image();
+        var image = <HTMLImageElement> new Image();
         var descentY = (this.enemyPosY++) + this.speed;
         this.enemyPosY = descentY;
-        image.src = 'http://silveiraneto.net/downloads/asteroid.png';
-        context.drawImage(image, this.enemyPosX, descentY, this.enemyWidth, this.enemyHeight);
+
+        image.src = (this.enemyIsDead) ? this.sprite : 'http://silveiraneto.net/downloads/asteroid.png';
+
+        if (this.enemyIsDead) {
+            context.save();
+            context.globalAlpha = this.transpareny--;
+            context.drawImage(image, this.enemyPosX, descentY, this.enemyWidth, this.enemyHeight);
+            context.restore();
+        } else {
+            context.drawImage(image, this.enemyPosX, descentY, this.enemyWidth, this.enemyHeight);    
+        }
+
+
+        
     }
 
     isDead() {

@@ -20,6 +20,7 @@ var Game = (function () {
         this.globalData = new GlobalData();
         this.globalData.enemies = [];
         this.globalData.rockets = [];
+        this.globalData.expiring = [];
 
         this.collision = new CollisionDetection();
 
@@ -85,6 +86,7 @@ var Game = (function () {
 
         for (i = this.globalData.enemies.length - 1; i >= 0; i--) {
             if (this.globalData.enemies[i].isDead()) {
+                this.globalData.expiring.push(this.globalData.enemies[i]);
                 this.globalData.enemies.splice(i, 1);
             }
         }
@@ -107,6 +109,11 @@ var Game = (function () {
                 drawable.draw(this.context);
             }
         }
+
+        for (i = 0; i < this.globalData.expiring.length; i++) {
+            drawable = this.globalData.expiring[i];
+            drawable.draw(this.context);
+        }
     };
     return Game;
 })();
@@ -120,15 +127,26 @@ var Enemy = (function () {
         this.enemyHeight = enemySize;
         this.enemyWidth = enemySize;
         this.enemyHealth = 100;
+        this.transpareny = 0.9;
 
         this.speed = speed;
+        this.sprite = 'http://opengameart.org/sites/default/files/explosion2.png';
     }
     Enemy.prototype.draw = function (context) {
         var image = new Image();
         var descentY = (this.enemyPosY++) + this.speed;
         this.enemyPosY = descentY;
-        image.src = 'http://silveiraneto.net/downloads/asteroid.png';
-        context.drawImage(image, this.enemyPosX, descentY, this.enemyWidth, this.enemyHeight);
+
+        image.src = (this.enemyIsDead) ? this.sprite : 'http://silveiraneto.net/downloads/asteroid.png';
+
+        if (this.enemyIsDead) {
+            context.save();
+            context.globalAlpha = this.transpareny--;
+            context.drawImage(image, this.enemyPosX, descentY, this.enemyWidth, this.enemyHeight);
+            context.restore();
+        } else {
+            context.drawImage(image, this.enemyPosX, descentY, this.enemyWidth, this.enemyHeight);
+        }
     };
 
     Enemy.prototype.isDead = function () {
@@ -252,4 +270,8 @@ window.onload = function () {
         window.requestAnimationFrame(gameloop);
     })();
 };
+/// <reference path="Collision.ts"/>
+/// <reference path="Player.ts"/>
+/// <reference path="EnemyFactory.ts"/>
+/// <reference path="Interfaces.ts"/>
 //# sourceMappingURL=app.js.map
