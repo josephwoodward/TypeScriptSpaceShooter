@@ -1,4 +1,4 @@
-﻿var CollisionDetection = (function () {
+var CollisionDetection = (function () {
     function CollisionDetection() {
     }
     CollisionDetection.prototype.detectCollisions = function (collidables1, collidables2) {

@@ -127,7 +127,7 @@ var Enemy = (function () {
         this.enemyHeight = enemySize;
         this.enemyWidth = enemySize;
         this.enemyHealth = 100;
-        this.transpareny = 0.9;
+        this.transpareny = 1.0;
 
         this.speed = speed;
         this.sprite = 'http://opengameart.org/sites/default/files/explosion2.png';
@@ -138,15 +138,7 @@ var Enemy = (function () {
         this.enemyPosY = descentY;
 
         image.src = (this.enemyIsDead) ? this.sprite : 'http://silveiraneto.net/downloads/asteroid.png';
-
-        if (this.enemyIsDead) {
-            context.save();
-            context.globalAlpha = this.transpareny--;
-            context.drawImage(image, this.enemyPosX, descentY, this.enemyWidth, this.enemyHeight);
-            context.restore();
-        } else {
-            context.drawImage(image, this.enemyPosX, descentY, this.enemyWidth, this.enemyHeight);
-        }
+        context.drawImage(image, this.enemyPosX, descentY, this.enemyWidth, this.enemyHeight);
     };
 
     Enemy.prototype.isDead = function () {
