@@ -1,8 +1,20 @@
-var Enemy = (function () {
-    function Enemy(posX, posY, enemySize, speed, sprite) {
-        this.enemyHealth = 100;
-        this.explosionIterator = 1;
-        this.explosionDelay = 0;
+class Enemy {
+    
+    /* http://www.developer.com/lang/top-10-things-to-know-about-typescript.html */
+
+    private enemyWidth: number;
+    private enemyHeight: number;
+    private speed: number;
+    private enemyPosX: number;
+    private enemyPosY: number;
+    private enemyIsDead: boolean;
+    private enemySize: number;
+    private sprite: string;
+    private enemyHealth: number = 100;
+    private explosionIterator: number = 1;
+    private explosionDelay: number = 0;
+
+    constructor(posX: number, posY: number, enemySize: number, speed: number, sprite: string) {
         this.enemyPosX = posX;
         this.enemyPosY = posY;
 
@@ -13,8 +25,9 @@ var Enemy = (function () {
         this.sprite = sprite;
         this.speed = speed;
     }
-    Enemy.prototype.draw = function (context) {
-        var image = new Image();
+
+    draw(context: CanvasRenderingContext2D) {
+        var image = <HTMLImageElement> new Image();
         var descentY = (this.enemyPosY++) + this.speed;
         this.enemyPosY = descentY;
 
@@ -30,40 +43,39 @@ var Enemy = (function () {
 
         image.src = this.sprite;
         context.drawImage(image, this.enemyPosX, descentY, this.enemyWidth, this.enemyHeight);
-    };
+    }
 
-    Enemy.prototype.getSpeed = function () {
+    getSpeed() {
         return this.speed;
-    };
+    }
 
-    Enemy.prototype.isDead = function () {
+    isDead() {
         return this.enemyIsDead;
-    };
+    }
 
-    Enemy.prototype.getPosX = function () {
+    getPosX() {
         return this.enemyPosX;
-    };
+    }
 
-    Enemy.prototype.getPosY = function () {
+    getPosY() {
         return this.enemyPosY;
-    };
+    }
 
-    Enemy.prototype.getWidth = function () {
+    getWidth() {
         return this.enemyWidth;
-    };
+    }
 
-    Enemy.prototype.getHeight = function () {
+    getHeight() {
         return this.enemyHeight;
-    };
+    }
 
-    Enemy.prototype.takeDamage = function () {
+    takeDamage() {
         if (this.enemySize < 40) {
             this.enemyHealth = 0;
         } else {
             this.enemyHealth -= 50;
         }
         this.enemyIsDead = (this.enemyHealth <= 0);
-    };
-    return Enemy;
-})();
-//# sourceMappingURL=Enemy.js.map
+    }
+
+} 

@@ -23,9 +23,6 @@ class CollisionDetection {
             if (this.isColliding(entityA, entityB)) {
                 entityA.takeDamage();
                 entityB.takeDamage();
-                
-
-
             }
         }        
     }

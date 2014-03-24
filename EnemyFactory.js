@@ -10,7 +10,7 @@
         /*if (size >= 25) {
         speed = Math.floor(Math.random() * 1) + 1;
         }*/
-        return new Asteroid(randomX, -40, size, speed);
+        return new Asteroid(randomX, -40, size, speed, "http://silveiraneto.net/downloads/asteroid.png");
     };
     return EnemyFactory;
 })();

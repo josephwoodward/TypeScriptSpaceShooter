@@ -19,6 +19,7 @@
   <ItemGroup>
     <Content Include="app.css" />
     <TypeScriptCompile Include="Asteroid.ts" />
+    <TypeScriptCompile Include="Enemy.ts" />
     <TypeScriptCompile Include="EnemyFactory.ts" />
     <Content Include="index.htm" />
     <Content Include="sprites\explode_1.png" />
