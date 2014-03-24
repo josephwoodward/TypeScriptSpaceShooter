@@ -18,8 +18,18 @@
   </PropertyGroup>
   <ItemGroup>
     <Content Include="app.css" />
+    <TypeScriptCompile Include="Asteroid.ts" />
     <TypeScriptCompile Include="EnemyFactory.ts" />
     <Content Include="index.htm" />
+    <Content Include="sprites\explode_1.png" />
+    <Content Include="sprites\explode_2.png" />
+    <Content Include="sprites\explode_3.png" />
+    <Content Include="sprites\explode_4.png" />
+    <Content Include="sprites\explode_5.png" />
+    <Content Include="sprites\explode_6.png" />
+    <Content Include="sprites\explode_7.png" />
+    <Content Include="sprites\explode_8.png" />
+    <Content Include="sprites\explode_9.png" />
     <Content Include="web.config" />
   </ItemGroup>
   <ItemGroup>

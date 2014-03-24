@@ -118,60 +118,6 @@ var Game = (function () {
     return Game;
 })();
 
-var Enemy = (function () {
-    function Enemy(posX, posY, enemySize, speed) {
-        this.enemyPosX = posX;
-        this.enemyPosY = posY;
-
-        this.enemySize = enemySize;
-        this.enemyHeight = enemySize;
-        this.enemyWidth = enemySize;
-        this.enemyHealth = 100;
-        this.transpareny = 1.0;
-
-        this.speed = speed;
-        this.sprite = 'http://opengameart.org/sites/default/files/explosion2.png';
-    }
-    Enemy.prototype.draw = function (context) {
-        var image = new Image();
-        var descentY = (this.enemyPosY++) + this.speed;
-        this.enemyPosY = descentY;
-
-        image.src = (this.enemyIsDead) ? this.sprite : 'http://silveiraneto.net/downloads/asteroid.png';
-        context.drawImage(image, this.enemyPosX, descentY, this.enemyWidth, this.enemyHeight);
-    };
-
-    Enemy.prototype.isDead = function () {
-        return this.enemyIsDead;
-    };
-
-    Enemy.prototype.getPosX = function () {
-        return this.enemyPosX;
-    };
-
-    Enemy.prototype.getPosY = function () {
-        return this.enemyPosY;
-    };
-
-    Enemy.prototype.getWidth = function () {
-        return this.enemyWidth;
-    };
-
-    Enemy.prototype.getHeight = function () {
-        return this.enemyHeight;
-    };
-
-    Enemy.prototype.takeDamage = function () {
-        if (this.enemySize < 40) {
-            this.enemyHealth = 0;
-        } else {
-            this.enemyHealth -= 50;
-        }
-        this.enemyIsDead = (this.enemyHealth <= 0);
-    };
-    return Enemy;
-})();
-
 var PlayerRocket = (function () {
     function PlayerRocket(posX, posY) {
         this.rocketHeight = 20;
@@ -262,8 +208,4 @@ window.onload = function () {
         window.requestAnimationFrame(gameloop);
     })();
 };
-/// <reference path="Collision.ts"/>
-/// <reference path="Player.ts"/>
-/// <reference path="EnemyFactory.ts"/>
-/// <reference path="Interfaces.ts"/>
 //# sourceMappingURL=app.js.map
