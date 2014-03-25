@@ -6,6 +6,7 @@ var GlobalData = (function () {
 
 var Game = (function () {
     function Game() {
+        this.mothershipHealth = 0;
         this.posX = 0;
         this.posY = 0;
         this.min = 20;
@@ -80,12 +81,17 @@ var Game = (function () {
 
         for (i = this.globalData.enemies.length - 1; i >= 0; i--) {
             if (this.globalData.enemies[i].getPosY() >= 500 || this.globalData.enemies[i].getPosY() <= -100) {
+                if (this.globalData.enemies[i].getPosY() >= 500) {
+                    this.mothershipHealth++;
+                    console.log(this.mothershipHealth);
+                }
                 this.globalData.enemies.splice(i, 1);
             }
         }
 
         for (i = this.globalData.enemies.length - 1; i >= 0; i--) {
             if (this.globalData.enemies[i].isDead()) {
+                // Add exploding enemies to new array
                 this.globalData.expiring.push(this.globalData.enemies[i]);
                 this.globalData.enemies.splice(i, 1);
             }

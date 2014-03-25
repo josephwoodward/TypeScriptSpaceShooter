@@ -20,6 +20,7 @@ class Game {
 
     enemyDelay: number;
     private enemyLimit: number;
+    private mothershipHealth: number = 0;
     enemy: IEnemey;
     enemyCollection: IEnemey[];
     globalData: GlobalData;
@@ -88,7 +89,7 @@ class Game {
         if (this.playerShip.movingDown) this.playerShip.moveDown();
 
         if (!this.playerShip.isDead()) {
-            this.playerShip.draw(this.context);    
+            this.playerShip.draw(this.context);
         }
 
         this.collision.detectCollisions(this.globalData.rockets, this.globalData.enemies);
@@ -100,6 +101,10 @@ class Game {
         // Check expired
         for (i = this.globalData.enemies.length - 1; i >= 0; i--) {
             if (this.globalData.enemies[i].getPosY() >= 500 || this.globalData.enemies[i].getPosY() <= -100) {
+                if (this.globalData.enemies[i].getPosY() >= 500) {
+                    this.mothershipHealth++;
+                    console.log(this.mothershipHealth);
+                }
                 this.globalData.enemies.splice(i, 1);
             }
         }
@@ -107,6 +112,7 @@ class Game {
         // Remove dead entities
         for (i = this.globalData.enemies.length - 1; i >= 0; i--) {
             if (this.globalData.enemies[i].isDead()) {
+                // Add exploding enemies to new array
                 this.globalData.expiring.push(this.globalData.enemies[i]);
                 this.globalData.enemies.splice(i, 1);
             }
