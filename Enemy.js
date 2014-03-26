@@ -64,6 +64,10 @@ var Enemy = (function () {
         }
         this.enemyIsDead = (this.enemyHealth <= 0);
     };
+
+    Enemy.prototype.getDamageDelivered = function () {
+        return 100;
+    };
     return Enemy;
 })();
 //# sourceMappingURL=Enemy.js.map

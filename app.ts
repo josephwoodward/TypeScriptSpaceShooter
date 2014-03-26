@@ -1,5 +1,5 @@
 class GlobalData {
-    enemies: IDrawable[];
+    enemies: Enemy[];
     newEntities: IDrawable[];
     rockets: IDrawable[];
     expiring: IDrawable[];
@@ -20,9 +20,9 @@ class Game {
 
     enemyDelay: number;
     private enemyLimit: number;
-    private mothershipHealth: number = 0;
-    enemy: IEnemey;
-    enemyCollection: IEnemey[];
+    private mothershipHealth: number = 100;
+    enemy: IEnemy;
+    enemyCollection: IEnemy[];
     globalData: GlobalData;
     playerShip: PlayerShip;
     collision: CollisionDetection;
@@ -62,7 +62,8 @@ class Game {
     }
 
     public update() {
-
+        document.getElementById("mothershipHealth").innerText = this.mothershipHealth.toString();
+        document.getElementById("playerHealth").innerText = this.playerShip.getHealth().toString();
     }
 
     public shoot() {
@@ -98,14 +99,19 @@ class Game {
 
         var i;
 
-        // Check expired
+        // Check expired enemies
         for (i = this.globalData.enemies.length - 1; i >= 0; i--) {
-            if (this.globalData.enemies[i].getPosY() >= 500 || this.globalData.enemies[i].getPosY() <= -100) {
-                if (this.globalData.enemies[i].getPosY() >= 500) {
-                    this.mothershipHealth++;
-                    console.log(this.mothershipHealth);
-                }
+            var enemy = <Enemy> this.globalData.enemies[i];
+            if (enemy.getPosY() >= 500) {
+                this.mothershipHealth -= this.globalData.enemies[i].getDamageDelivered();
                 this.globalData.enemies.splice(i, 1);
+            }
+        }
+
+        // Remove expired rockets
+        for (i = this.globalData.rockets.length - 1; i >= 0; i--) {
+            if (this.globalData.rockets[i].getPosY() < -20) {
+                this.globalData.rockets.splice(i, 1);
             }
         }
 
@@ -138,7 +144,7 @@ class Game {
             }
         }
 
-        // Draw expiring
+        // Draw expiring (aka exploding enemies)
         for (i = 0; i < this.globalData.expiring.length; i++) {
             drawable = <IDrawable> this.globalData.expiring[i];
             drawable.draw(this.context);

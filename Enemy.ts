@@ -1,4 +1,4 @@
-class Enemy {
+class Enemy implements IEnemy, IDrawable, ICollidable {
     
     /* http://www.developer.com/lang/top-10-things-to-know-about-typescript.html */
 
@@ -76,6 +76,10 @@ class Enemy {
             this.enemyHealth -= 50;
         }
         this.enemyIsDead = (this.enemyHealth <= 0);
+    }
+
+    getDamageDelivered() {
+        return 100;
     }
 
 } 

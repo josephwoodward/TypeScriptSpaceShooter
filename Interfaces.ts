@@ -6,8 +6,8 @@ interface ICollidable {
     takeDamage();
 }
  
-interface IEnemey {
-
+interface IEnemy {
+    getDamageDelivered();
 }
 
 interface IDrawable {

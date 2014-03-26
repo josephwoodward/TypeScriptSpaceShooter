@@ -89,6 +89,10 @@ var PlayerShip = (function () {
         console.log("here" + this.playerHealth);
         this.playerIsDead = (this.playerHealth <= 0);
     };
+
+    PlayerShip.prototype.getHealth = function () {
+        return this.playerHealth;
+    };
     return PlayerShip;
 })();
 //# sourceMappingURL=Player.js.map

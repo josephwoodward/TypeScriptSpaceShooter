@@ -6,7 +6,7 @@ var GlobalData = (function () {
 
 var Game = (function () {
     function Game() {
-        this.mothershipHealth = 0;
+        this.mothershipHealth = 100;
         this.posX = 0;
         this.posY = 0;
         this.min = 20;
@@ -40,6 +40,8 @@ var Game = (function () {
     };
 
     Game.prototype.update = function () {
+        document.getElementById("mothershipHealth").innerText = this.mothershipHealth.toString();
+        document.getElementById("playerHealth").innerText = this.playerShip.getHealth().toString();
     };
 
     Game.prototype.shoot = function () {
@@ -80,12 +82,16 @@ var Game = (function () {
         var i;
 
         for (i = this.globalData.enemies.length - 1; i >= 0; i--) {
-            if (this.globalData.enemies[i].getPosY() >= 500 || this.globalData.enemies[i].getPosY() <= -100) {
-                if (this.globalData.enemies[i].getPosY() >= 500) {
-                    this.mothershipHealth++;
-                    console.log(this.mothershipHealth);
-                }
+            var enemy = this.globalData.enemies[i];
+            if (enemy.getPosY() >= 500) {
+                this.mothershipHealth -= this.globalData.enemies[i].getDamageDelivered();
                 this.globalData.enemies.splice(i, 1);
+            }
+        }
+
+        for (i = this.globalData.rockets.length - 1; i >= 0; i--) {
+            if (this.globalData.rockets[i].getPosY() < -20) {
+                this.globalData.rockets.splice(i, 1);
             }
         }
 

@@ -8,7 +8,11 @@ var Asteroid = (function (_super) {
     __extends(Asteroid, _super);
     function Asteroid(posX, posY, enemySize, speed, sprite) {
         _super.call(this, posX, posY, enemySize, speed, sprite);
+        this.damageDelivered = 20;
     }
+    Asteroid.prototype.getDamageDelivered = function () {
+        return this.damageDelivered;
+    };
     return Asteroid;
 })(Enemy);
 //# sourceMappingURL=Asteroid.js.map

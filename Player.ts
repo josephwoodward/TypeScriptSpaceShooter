@@ -107,4 +107,8 @@ class PlayerShip implements IDrawable, ICollidable {
         console.log("here" + this.playerHealth);
         this.playerIsDead = (this.playerHealth <= 0);
     }
+
+    getHealth() {
+        return this.playerHealth;
+    }
 } 
