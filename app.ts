@@ -95,7 +95,9 @@ class Game {
 
         this.collision.detectCollisions(this.globalData.rockets, this.globalData.enemies);
 
-        this.collision.detectCollisionOnPoint(this.playerShip, this.globalData.enemies);
+        if (!this.playerShip.isDead()) {
+            this.collision.detectCollisionOnPoint(this.playerShip, this.globalData.enemies);    
+        }
 
         var i;
 
