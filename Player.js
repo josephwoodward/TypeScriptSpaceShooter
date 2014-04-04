@@ -1,5 +1,9 @@
-var PlayerShip = (function () {
+﻿var PlayerShip = (function () {
     function PlayerShip(posX, posY) {
+        this.explosionIterator = 1;
+        this.explosionDelay = 0;
+        /*private sprite: string = "http://www.pixeljoint.com/files/icons/spaceship1_final.png";*/
+        this.sprite = "/sprites/spaceship.png";
         this.playerPosX = posX;
         this.playerPosY = posY;
 
@@ -12,7 +16,18 @@ var PlayerShip = (function () {
     }
     PlayerShip.prototype.draw = function (context) {
         var image = new Image();
-        image.src = 'http://www.pixeljoint.com/files/icons/spaceship1_final.png';
+
+        if (this.playerIsDead) {
+            if (this.explosionIterator <= 9 && this.explosionDelay == 4) {
+                this.explosionIterator++;
+                this.explosionDelay = 0;
+                this.sprite = "/sprites/explode_" + this.explosionIterator + ".png";
+            } else {
+                this.explosionDelay++;
+            }
+        }
+
+        image.src = this.sprite;
         context.drawImage(image, this.playerPosX, this.playerPosY, this.playerWidth, this.playerHeight);
     };
 

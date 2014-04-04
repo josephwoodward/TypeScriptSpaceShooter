@@ -36,6 +36,7 @@
   <ItemGroup>
     <TypeScriptCompile Include="app.ts" />
     <TypeScriptCompile Include="Collision.ts" />
+    <TypeScriptCompile Include="Example.ts" />
     <TypeScriptCompile Include="Interfaces.ts" />
     <TypeScriptCompile Include="Player.ts" />
   </ItemGroup>

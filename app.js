@@ -71,9 +71,7 @@ var Game = (function () {
         if (this.playerShip.movingDown)
             this.playerShip.moveDown();
 
-        if (!this.playerShip.isDead()) {
-            this.playerShip.draw(this.context);
-        }
+        this.playerShip.draw(this.context);
 
         this.collision.detectCollisions(this.globalData.rockets, this.globalData.enemies);
 
@@ -179,34 +177,29 @@ window.onload = function () {
     document.onkeydown = keyDownCheck;
     document.onkeyup = keyUpCheck;
 
-    //document.onkeypress = keyPressCheck;
     function keyDownCheck(e) {
         e = e || window.event;
 
-        if (e.keyCode == 37)
+        if (e.keyCode == 37 && !game.playerShip.isDead())
             game.playerShip.setMoveLeft(true);
-        if (e.keyCode == 38)
+        if (e.keyCode == 38 && !game.playerShip.isDead())
             game.playerShip.setMoveUp(true);
-        if (e.keyCode == 39)
+        if (e.keyCode == 39 && !game.playerShip.isDead())
             game.playerShip.setMoveRight(true);
-        if (e.keyCode == 40)
+        if (e.keyCode == 40 && !game.playerShip.isDead())
             game.playerShip.setMoveDown(true);
     }
 
-    /*function keyPressCheck(e) {
-    e = e || window.event;
-    //if (e.keyCode == 32) game.shoot();
-    }*/
     function keyUpCheck(e) {
         e = e || window.event;
 
-        if (e.keyCode == 37)
+        if (e.keyCode == 37 && !game.playerShip.isDead())
             game.playerShip.setMoveLeft(false);
-        if (e.keyCode == 38)
+        if (e.keyCode == 38 && !game.playerShip.isDead())
             game.playerShip.setMoveUp(false);
-        if (e.keyCode == 39)
+        if (e.keyCode == 39 && !game.playerShip.isDead())
             game.playerShip.setMoveRight(false);
-        if (e.keyCode == 40)
+        if (e.keyCode == 40 && !game.playerShip.isDead())
             game.playerShip.setMoveDown(false);
 
         if (e.keyCode == 32)

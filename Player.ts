@@ -11,10 +11,16 @@ class PlayerShip implements IDrawable, ICollidable {
     public movingUp: boolean;
     public movingDown: boolean;
 
+    private explosionIterator: number = 1;
+    private explosionDelay: number = 0;
+
     public playerWidth: number;
     public playerHeight: number;
 
     private playerHealth: number;
+
+    /*private sprite: string = "http://www.pixeljoint.com/files/icons/spaceship1_final.png";*/
+    private sprite: string = "/sprites/spaceship.png";
 
     constructor(posX: number, posY: number) {
         this.playerPosX = posX;
@@ -30,7 +36,18 @@ class PlayerShip implements IDrawable, ICollidable {
 
     draw(context: CanvasRenderingContext2D) {
         var image = new Image();
-        image.src = 'http://www.pixeljoint.com/files/icons/spaceship1_final.png';
+
+        if (this.playerIsDead) {
+            if (this.explosionIterator <= 9 && this.explosionDelay == 4) {
+                this.explosionIterator++;
+                this.explosionDelay = 0;
+                this.sprite = "/sprites/explode_" + this.explosionIterator + ".png";
+            } else {
+                this.explosionDelay++;
+            }
+        }
+
+        image.src = this.sprite;
         context.drawImage(image, this.playerPosX, this.playerPosY, this.playerWidth, this.playerHeight);
     }
 
@@ -78,6 +95,13 @@ class PlayerShip implements IDrawable, ICollidable {
         }
     }
 
+    moveStop() {
+        this.movingUp = false;
+        this.movingDown = false;
+        this.movingRight = false;
+        this.movingLeft = false;
+    }
+
     setMoveLeft(moveLeft: boolean) {
         this.movingLeft = moveLeft;
     }
@@ -104,7 +128,6 @@ class PlayerShip implements IDrawable, ICollidable {
 
     takeDamage() {
         this.playerHealth -= 20;
-        console.log("here" + this.playerHealth);
         this.playerIsDead = (this.playerHealth <= 0);
     }
 
