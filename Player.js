@@ -1,4 +1,4 @@
-﻿var PlayerShip = (function () {
+var PlayerShip = (function () {
     function PlayerShip(posX, posY) {
         this.explosionIterator = 1;
         this.explosionDelay = 0;
@@ -75,6 +75,13 @@
         }
     };
 
+    PlayerShip.prototype.moveStop = function () {
+        this.movingUp = false;
+        this.movingDown = false;
+        this.movingRight = false;
+        this.movingLeft = false;
+    };
+
     PlayerShip.prototype.setMoveLeft = function (moveLeft) {
         this.movingLeft = moveLeft;
     };
@@ -101,7 +108,6 @@
 
     PlayerShip.prototype.takeDamage = function () {
         this.playerHealth -= 20;
-        console.log("here" + this.playerHealth);
         this.playerIsDead = (this.playerHealth <= 0);
     };
 

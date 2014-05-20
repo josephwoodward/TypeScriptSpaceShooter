@@ -215,4 +215,8 @@ window.onload = function () {
         window.requestAnimationFrame(gameloop);
     })();
 };
+/// <reference path="Collision.ts"/>
+/// <reference path="Player.ts"/>
+/// <reference path="EnemyFactory.ts"/>
+/// <reference path="Interfaces.ts"/>
 //# sourceMappingURL=app.js.map

@@ -1,4 +1,4 @@
-﻿var Enemy = (function () {
+var Enemy = (function () {
     function Enemy(posX, posY, enemySize, speed, sprite) {
         this.enemyHealth = 100;
         this.explosionIterator = 1;
