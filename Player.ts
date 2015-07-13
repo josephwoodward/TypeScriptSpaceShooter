@@ -43,7 +43,7 @@ class PlayerShip implements IDrawable, ICollidable {
             if (this.explosionIterator <= 9 && this.explosionDelay == 4) {
                 this.explosionIterator++;
                 this.explosionDelay = 0;
-                this.sprite = "/sprites/explode_" + this.explosionIterator + ".png";
+                this.sprite = "./sprites/explode_" + this.explosionIterator + ".png";
             } else {
                 this.explosionDelay++;
             }

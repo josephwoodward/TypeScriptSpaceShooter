@@ -1,3 +1,4 @@
+/// <reference path="Asteroid.ts"/>
 var EnemyFactory = (function () {
     function EnemyFactory() {
     }
@@ -8,7 +9,7 @@ var EnemyFactory = (function () {
         /*if (size >= 25) {
             speed = Math.floor(Math.random() * 1) + 1;
         }*/
-        return new Asteroid(randomX, -40, size, speed, "http://silveiraneto.net/downloads/asteroid.png");
+        return new Asteroid(randomX, -40, size, speed, "./sprites/asteroid.png");
     };
     return EnemyFactory;
 })();

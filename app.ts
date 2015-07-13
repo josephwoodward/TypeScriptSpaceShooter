@@ -181,7 +181,7 @@ class PlayerRocket implements IDrawable, ICollidable {
     draw(context: CanvasRenderingContext2D) {
         var image = new Image();
         this.rocketPosY = (this.rocketPosY--) - this.rocketSpeed;
-        image.src = 'http://findicons.com/files/icons/1520/wallace_gromit/32/rocket.png';
+        image.src = './sprites/rocket.png';
         context.drawImage(image, this.rocketPosX, this.rocketPosY, this.rocketWidth, this.rocketHeight);
     }
 

@@ -1,4 +1,6 @@
-﻿class EnemyFactory
+﻿/// <reference path="Asteroid.ts"/>
+
+class EnemyFactory
 {
     createRandomEnemy() {
         var randomX = Math.floor(Math.random() * 800) + 1;
@@ -9,6 +11,6 @@
             speed = Math.floor(Math.random() * 1) + 1;
         }*/
 
-        return new Asteroid(randomX, -40, size, speed, "http://silveiraneto.net/downloads/asteroid.png");
+        return new Asteroid(randomX, -40, size, speed, "./sprites/asteroid.png");
     }    
 }
