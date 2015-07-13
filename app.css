@@ -1,5 +1,28 @@
 ﻿body {
+    background-color: #000;
     font-family: 'Segoe UI', sans-serif;
+}
+
+#canvas_wrapper {
+    border: 1px solid #999;
+    margin: 100px auto 0;
+    width: 900px;
+    height: 500px;
+    overflow: hidden;
+}
+
+#score_wrapper {
+    width: 900px;
+    margin: 10px auto 0;
+    color: #ccc;
+}
+
+#score_wrapper p {
+    margin: 0 0 10px;
+}
+
+canvas {
+    background: url('./sprites/background.jpg');
 }
 
 span {

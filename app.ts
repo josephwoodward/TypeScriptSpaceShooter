@@ -1,3 +1,9 @@
+/// <reference path="Interfaces.ts"/>
+/// <reference path="Enemy.ts"/>
+/// <reference path="Collision.ts"/>
+/// <reference path="Player.ts"/>
+/// <reference path="EnemyFactory.ts"/>
+
 class GlobalData {
     enemies: Enemy[];
     newEntities: IDrawable[];
@@ -243,8 +249,3 @@ window.onload = () => {
     })();
 
 };
-
-/// <reference path="Collision.ts"/>
-/// <reference path="Player.ts"/>
-/// <reference path="EnemyFactory.ts"/>
-/// <reference path="Interfaces.ts"/>

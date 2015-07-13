@@ -1,3 +1,5 @@
+/// <reference path="Interfaces.ts"/>
+
 class CollisionDetection {
 
     detectCollisions(collidables1, collidables2) {

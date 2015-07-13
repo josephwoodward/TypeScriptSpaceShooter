@@ -1,3 +1,5 @@
+/// <reference path="Interfaces.ts"/>
+
 class PlayerShip implements IDrawable, ICollidable {
 
     public playerPosX: number;
@@ -20,7 +22,7 @@ class PlayerShip implements IDrawable, ICollidable {
     private playerHealth: number;
 
     /*private sprite: string = "http://www.pixeljoint.com/files/icons/spaceship1_final.png";*/
-    private sprite: string = "/sprites/spaceship.png";
+    private sprite: string = "./sprites/spaceship.png";
 
     constructor(posX: number, posY: number) {
         this.playerPosX = posX;

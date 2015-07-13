@@ -1,3 +1,5 @@
+/// <reference path="Enemy.ts"/>
+
 class Asteroid extends Enemy {
 
     private damageDelivered: number = 20;
