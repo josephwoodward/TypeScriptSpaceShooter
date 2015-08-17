@@ -239,7 +239,6 @@ window.onload = () => {
 
 
     (function gameloop() {
-
         // stats.update();
         game.step();
         game.update();

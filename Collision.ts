@@ -10,8 +10,6 @@ class CollisionDetection {
                 var entityB = <ICollidable> collidables2[j];
 
                 if (this.isColliding(entityA, entityB)) {
-                    console.log(entityA);
-                    console.log(entityB);
                     entityA.takeDamage();
                     entityB.takeDamage();
                 }

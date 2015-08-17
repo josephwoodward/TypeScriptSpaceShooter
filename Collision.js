@@ -8,8 +8,6 @@ var CollisionDetection = (function () {
             for (var j = 0; j < collidables2.length; j++) {
                 var entityB = collidables2[j];
                 if (this.isColliding(entityA, entityB)) {
-                    console.log(entityA);
-                    console.log(entityB);
                     entityA.takeDamage();
                     entityB.takeDamage();
                 }
