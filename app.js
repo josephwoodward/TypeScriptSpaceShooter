@@ -69,6 +69,7 @@ var Game = (function () {
             this.collision.detectCollisionOnPoint(this.playerShip, this.globalData.enemies);
         }
         var i;
+        // Check expired enemies
         for (i = this.globalData.enemies.length - 1; i >= 0; i--) {
             var enemy = this.globalData.enemies[i];
             if (enemy.getPosY() >= 500) {
@@ -76,11 +77,13 @@ var Game = (function () {
                 this.globalData.enemies.splice(i, 1);
             }
         }
+        // Remove expired rockets
         for (i = this.globalData.rockets.length - 1; i >= 0; i--) {
             if (this.globalData.rockets[i].getPosY() < -20) {
                 this.globalData.rockets.splice(i, 1);
             }
         }
+        // Remove dead entities
         for (i = this.globalData.enemies.length - 1; i >= 0; i--) {
             if (this.globalData.enemies[i].isDead()) {
                 // Add exploding enemies to new array
@@ -99,12 +102,14 @@ var Game = (function () {
             drawable = this.globalData.enemies[i];
             drawable.draw(this.context);
         }
+        // Draw rockets
         for (i = 0; i < this.globalData.rockets.length; i++) {
             drawable = this.globalData.rockets[i];
             if (!drawable.isDead()) {
                 drawable.draw(this.context);
             }
         }
+        // Draw expiring (aka exploding enemies)
         for (i = 0; i < this.globalData.expiring.length; i++) {
             drawable = this.globalData.expiring[i];
             drawable.draw(this.context);

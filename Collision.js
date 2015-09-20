@@ -32,7 +32,10 @@ var CollisionDetection = (function () {
         var topA = entityA.getPosY() - (heightA / 2);
         var leftB = entityB.getPosX() - (widthB / 2);
         var topB = entityB.getPosY() - (heightB / 2);
-        if (leftA < leftB + widthB && leftA + widthA > leftB && topA < topB + heightB && topA + heightA > topB) {
+        if (leftA < leftB + widthB &&
+            leftA + widthA > leftB &&
+            topA < topB + heightB &&
+            topA + heightA > topB) {
             return true;
         }
         return false;
