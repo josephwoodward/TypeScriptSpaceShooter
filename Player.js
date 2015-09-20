@@ -3,7 +3,6 @@ var PlayerShip = (function () {
     function PlayerShip(posX, posY) {
         this.explosionIterator = 1;
         this.explosionDelay = 0;
-        /*private sprite: string = "http://www.pixeljoint.com/files/icons/spaceship1_final.png";*/
         this.sprite = "./sprites/spaceship.png";
         this.playerPosX = posX;
         this.playerPosY = posY;
