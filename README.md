@@ -7,4 +7,4 @@ This project is/was a great way for me to have a play with TypeScript (which has
 
 It's only really been tested in the latest version of Chrome so far, though it may work in other browsers.
 
-You can find [a working demo here](http://josephwoodward.co.uk/content/simplejsgame/).
+You can find [a working demo here](https://josephwoodward.github.io/TypeScriptSpaceShooter/index.htm).
